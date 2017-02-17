@@ -1,0 +1,9 @@
+[]	Fully implement Horn (add sound)
+
+[]	Separate out Globals, most go to scoreboard.common, the ones specific to
+        JavaFX go to scoreboard.fx2.framework
+
+[]	Bug displaying player number.  If number ends in 0 (i.e. 10, 20, 30),
+        that digit is blank.
+
+[]      Tab/Arrow_Key between editiable components on the scoreboard

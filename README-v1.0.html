@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta content="text/html; charset=windows-1252"
+      http-equiv="Content-Type">
+    <title>JavaFX Scoreboard v1.0 README</title>
+  </head>
+  <body>
+    <big style="font-weight: bold;"><big>JavaFX Scoreboard v1.0 README</big></big><br>
+    <br>
+    <a href="#overview">Overview</a><br>
+    <a href="#howto_run">How to Run the Application</a><br>
+    <a href="#commandline">Command-line Switches</a><br>
+    <a href="#organization">The Organization of the Souce Code</a><br>
+    <a href="#framework">A Little more Detail on the
+      scoreboard.fx2.framework Package</a><br>
+    <a href="#notes">Additional Notes</a><br>
+    <br>
+    <small><big style="font-weight: bold;"><big> <a name="overview"></a><small>Overview</small><br>
+        </big></big><big style="font-weight: bold;"><big><span
+            style="font-weight: bold;"></span></big></big><big
+        style="font-weight: bold;"><big><span style="font-weight: bold;"></span></big></big><big>This
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        archive contains the source code required to build an electronic
+        scoreboard.&nbsp; It is written in Java utilizing the <a
+          href="http://www.oracle.com/technetwork/java/javafx/overview/index.html">JavaFX</a>
+        2.x API, and is packaged as a <a href="http://netbeans.org">NetBeans</a>
+        project.&nbsp; The type of scoreboard chosen for this
+        implementation pertains to ice hockey.&nbsp; With an
+        understanding of the overall organization and structure of the
+        code, it should be straightforward to extend scoreboard
+        functionality to include other sports.<br>
+      </big><br>
+    </small> <small><big><big><small> At start up, the scoreboard
+            executes in one of two modes: as a <span style="font-style:
+              italic;">master</span> (the default), or as a <span
+              style="font-style: italic;">slave</span>.&nbsp; In <span
+              style="font-style: italic;">master</span> mode, the
+            scoreboard user interface is active.&nbsp; When a user moves
+            his/her pointing device over an editable part of the
+            scoreboard (a scoreboard digit), that component will, via
+            JavaFX animation, increase in size.&nbsp; This provides the
+            user a visual cue about what component is in focus.&nbsp; By
+            either clicking on the focused digit, or by utilizing
+            keyboard input, the user can change the value of the focused
+            digit.&nbsp; Each time a scoreboard digit is modified, an
+            XML packet is created describing the modification, and sent
+            out over an IP socket.<br>
+            <br>
+            In </small> <small><span style="font-style: italic;">slave</span>
+            or <span style="font-style: italic;">remote scoreboard</span>
+            mode, the scoreboard UI is inactive.&nbsp; That is to say,
+            it will not respond to any mouse or keyboard input.&nbsp;
+            Its display can only be updated by listening in on an
+            agreed-upon IP socket (configurable by command-line switch)
+            for XML scoreboard update packets.&nbsp; Upon receiving
+            those packets, the remote scoreboard instance will parse the
+            XML data and change the scoreboard display
+            accordingly.&nbsp; To start up a scoreboard in slave mode,
+            use the <tt>-slave</tt> command-line switch.&nbsp; It is
+            possible (and desirable) to have multiple slave scoreboards
+            simultaneously receiving updates from one master scoreboard.<br>
+            <br>
+          </small> <br>
+          <a name="howto_run"></a> <small><span style="font-weight:
+              bold;">How to Run the Application</span></small><br>
+          <small>The easiest way to run the scoreboard in either slave
+            or master mode is to utilize the pre-built <tt>Main</tt>
+            classes provided in the <tt>scoreboard.fx2</tt> package
+            directory.&nbsp; Here's a partial list of those classes and
+            their meanings:</small><br>
+          <br>
+        </big></big></small>
+    <div style="margin-left: 40px;">To see how a master scoreboard can
+      update a slave scoreboard, just start up the first of these two
+      main classes, <tt>Main</tt> and <tt>MainRemote</tt> on the same
+      system.</div>
+    <small><big><big> </big></big></small>
+    <ul>
+      <li><tt>Main.java</tt> - This will run the scoreboard in the
+        default (master) mode and open up an IP socket on the default
+        host (localhost) and port (2011).&nbsp; All scoreboard updates
+        will be sent over that defined socket.<br>
+      </li>
+      <li><tt>MainRemote.java</tt> - This will run an instance of a
+        slave or remote scoreboard.&nbsp; It will open up and listen in
+        on the default host (localhost) and port (2011) IP Socket. As
+        XML updates are received over the IP socket, the scoreboard
+        display will change accordingly.</li>
+    </ul>
+    <div style="margin-left: 40px;">The following main classes
+      demonstate different remote scoreboard clients<br>
+    </div>
+    <ul>
+      <li><tt>MainRemoteClockOnly.java</tt> - It is possible to
+        configure a slave or remote client to display only a subset of
+        the master scoreboard's components.&nbsp; This remote or slave
+        instance of the scoreboard displays only the clock and listens
+        in on the default IP socket host and port.</li>
+      <li><tt>MainRemoteLED.java</tt> - The scoreboard source is
+        architected in such a way that with minimal work, an alternate
+        implementation of the look and feel can be implemented.&nbsp; In
+        this example, a remote scoreboard display has digits with an LED
+        segment look and feel.&nbsp; This display will listen in on the
+        default IP socket host and port.</li>
+    </ul>
+    <div style="margin-left: 40px;">The following main classes use
+      multicast sockets rather than IP sockets.&nbsp; <span
+        style="font-style: italic;">In general, using multicast sockets
+        is not recommended as experience has shown, they tend to be
+        filtered out by all sorts of networking equipment.</span></div>
+    <ul>
+      <li><tt>MainMulticast.java</tt> - Similar to <tt>Main.java</tt>,
+        this instance instead uses a default multicast socket and port
+        to communicate rather than a standard IP socket. <span
+          style="font-style: italic;"></span><br>
+      </li>
+      <li><tt>MainMulticastRemote.java</tt> - The multicast socket
+        alternative to <tt>MainRemote.java</tt>.</li>
+    </ul>
+    <br>
+    <a name="commandline"></a><span style="font-weight: bold;">Command-line
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      Switches</span><br>
+    By running any of the main classes found in the <tt>scoreboard.fx2</tt>
+    package directory with the <tt>-help</tt> or <tt>--help</tt>
+    argument, the following description of command-line switches is
+    displayed to standard output.&nbsp; As we progress through this
+    document, the meaining of certain options will become more evident:<br>
+    <pre style="margin-left: 40px;">Command-line options:</pre>
+    <pre style="margin-left: 40px;"><br>&nbsp; -ConfigURL:URL (default: scoreboard/config/config.xml in Scoreboard.jar)<br>	&nbsp;URL pointing to XML file describing remote client configuration<br>  -DisplaySocket<br>         Show socket connection info at bottom of scoreboard display<br> &nbsp;-DumpConfig:[true or false] (default false)<br>         Dump layout of scoreboard in XML (for client customization)<br>  -help or --help<br>         Print this screen for command-line argument options and exit<br>  -host:IP_ADDRESS (default: localhost)<br>         Specify IP Address of socket<br>  -master (default)<br>         Run as a scoreboard controller (server)<br>  -MulticastAddr:IP_ADDRESS (default: 227.27.27.27)<br>         Use multicast socket and specify its IP address<br>  -port:PORT_NUMBER (default 2011)<br>         Specify port for socket connection<br>  -slave<br>         Run as a remote scoreboard client<br>  -tv<br>         Run in full screen mode for a TV (with padding for overscan)<br>  -unlitOpacity:[0-100] (default 10)<br>         Change opacity of unlit scoreboard bulbs<br>  -UseIPSocket (default)<br>         Use IP sockets (with defaults) for scoreboard updates<br>  -UseMulticastSocket<br>         Use multicast sockets (with defaults) for scoreboard updates</pre>
+    <br>
+    <a name="organization"></a><span style="font-weight: bold;">The
+      Organization of the Source Code</span><br>
+    Here's a list of the relevant packages, and a brief description of
+    their contents<br>
+    <ul>
+      <li><tt>scoreboard.common</tt> - Contains the constants,
+        interfaces and enums that are used throughout the source code<br>
+      </li>
+      <li><tt>scoreboard.common.networking</tt> - Contains common
+        networking code primarily related to IP and Multicast socket
+        communication.&nbsp; Nearly all of these classes are abstract,
+        and need to be implemented for a specific runtime platform (e.g.
+        Swing vs. JavaFx).&nbsp; For this version of the source, JavaFX
+        implementations are found in the <tt>scoreboard.fx2.networking</tt>
+        package described below.<br>
+      </li>
+      <li><tt>scoreboard.common.xml</tt> - Classes related to the XML
+        processing for this application.&nbsp; In particular, the <tt>XMLSpec.java</tt>
+        file found in this package defines, in java, the XML rules for
+        scoreboard update and configuration.<br>
+      </li>
+      <li><tt>scoreboard.config</tt> - Used to house sample XML
+        configuration files describing remote scoreboard layout and
+        configuration.&nbsp; There is no Java source in this directory.<br>
+      </li>
+      <li><tt>scoreboard.fx2</tt> - This is where the various main Java
+        class files are located as described in the <a
+          href="#howto_run">How to Run the Application</a> section of
+        this document.<br>
+      </li>
+      <li><tt>scoreboard.fx2.framework</tt> - The heart of the
+        Scorebaord source code, this is where a great deal of the logic
+        for the scoreboard is contained.&nbsp; Many, but not all, of the
+        Java classes found in this package are abstract, and need to be
+        extended in order to create a real scoreboard
+        implementation.&nbsp; In particular, the look and feel of
+        scoreboard digits must be defined. Two such implementations
+        exist for this version of the code.&nbsp; They can be found in
+        the <tt>scoreboard.fx2.impl.bulb</tt> and <tt>scoreboard.fx2.impl.led</tt>
+        packages that follow.<br>
+      </li>
+      <li><tt>scoreboard.fx2.impl.bulb</tt> - In this implementation,
+        each scoreboard digit is comprised of 27 light bulbs that are
+        turned on and off to display the various numeric values.&nbsp;
+        It is meant to look like traditional light bulb based
+        scoreboards.<br>
+      </li>
+      <li><tt>scoreboard.fx2.impl.led</tt> - The scoreboard digits for
+        this implementation, are comprised of 7 LED segments that are
+        turned on and off to display various numeric values.<br>
+      </li>
+      <li><tt>scoreboard.fx2.networking</tt> - This package contains the
+        JavaFX implementation of the abstract classes found in the <tt>scoreboard.common.networking</tt>
+        package.&nbsp; The reason for the abstraction layer here has to
+        do with the fact that UI platforms (like Swing and JavaFX)
+        require that work be done on the main thread.&nbsp; Each
+        platform achieves this in a slightly different way.&nbsp; In
+        JavaFX, the <tt>Platform.runLater()</tt> method has to be
+        utilized, while Swing, for example, requires use of the <tt>SwingUtilities.invokeLater()</tt>
+        method.<br>
+      </li>
+      <li><tt>scoreboard.fx2.util</tt> - Contains trivial utility class
+        specific to JavaFX</li>
+    </ul>
+    <br>
+    <a name="framework"><span style="font-weight: bold;">A Little More
+        Detail On the <tt>scoreboard.fx2.framework</tt> Package</span><br>
+      &nbsp; <br>
+      The figure below represents a class hierarchy diagram of the
+      following packages:<br>
+    </a>
+    <ol>
+      <li>The abstract classes found in <tt>scoreboard.fx2.framework</tt>
+        - of which most are directly or indirectly derived from the
+        JavaFX base <tt>Parent</tt> class.&nbsp; In order to create an
+        alternate scoreboard implementation, the following lowest level
+        abstract classes must be extended: <tt>Digit</tt>, <tt>SingleDigit</tt>,
+        <tt>TwoDigit</tt>, <tt>Penalty</tt>, <tt>Clock</tt> and <tt>HockeyScoreboard</tt>.&nbsp;
+
+
+
+
+
+
+
+
+
+        The last class, <tt>HockeyScoreboard</tt>, could be replaced
+        with another abstract class (e.g. <tt>BasketballScoreboard</tt>)
+        that has a different look and behavior.<br>
+      </li>
+      <li>The implementation classes found in <tt>scoreboard.fx2.impl.bulb</tt>
+        - These are the emboldend classes named with a "Bulb" prefix,
+        found at the bottom of the diagram.&nbsp; They represent the
+        classes used to implement scoreboard digits with a light bulb
+        look and feel.<br>
+      </li>
+      <li>The implementation classes found in <tt>scoreboard.fx2.impl.led</tt>
+        - These are the emboldend classes named with an "LED" prefix,
+        found at the bottom of the diagram.&nbsp; They represent the
+        classes used to implement scoreboard digits with an LED segment
+        look and feel.<br>
+      </li>
+    </ol>
+    <img style="width: 912px; height: 597px;" alt=""
+      src="ClassDiagram-v1.0.jpg"><br>
+    <br>
+    <br>
+    <a name="notes"><span style="font-weight: bold;">Additional Notes</span><br>
+      <ol>
+        <li>There is some keyboard input support for this version of the
+          application.&nbsp; For example, the user can press the
+          &lt;SPACE&gt; bar to toggle starting and stopping the
+          clock.&nbsp; Additionally, the user can use the left and right
+          arrow keys to switch focus between digits of the same
+          component.<br>
+        </li>
+        <li>This source was derived originally from a project written in
+          the now defunct JavaFX Script.&nbsp; At the time of the
+          original writing, JavaFX Script was still in its early stages
+          and the work on layout managers was still in a state of
+          flux.&nbsp; Hence, the decision was made not to use any JavaFX
+          LayoutManager and instead rely on absolute coordinate
+          positioning of scoreboard components.&nbsp; The JavaFX 2.x
+          version of the Scoreboard application that exists here still
+          has those constraints.&nbsp; The unfortunate consequences are
+          that a lot of tedious positioning and sizing of components
+          must take place.</li>
+        <li>There are two sets of defined XML attributes used for this
+          application. One is used to describe and configure the layout
+          of a remote (slave) scoreboard client, where an informal
+          description of the specification can be found in the <tt>scoreboard.config.ConfigXMLSpec.xml</tt>
+          file. As referenced above, no JavaFX LayoutManager was used,
+          so some very primitive layout semantics are part of this
+          spec.&nbsp; The second set of XML attributes describe what a
+          scoreboard update looks like.&nbsp; A sample of possible
+          scoreboard update attributes can be found at <tt>scoreboard.config.UpdateXMLSpec.xml</tt>.</li>
+        <li>The <tt>scoreboard.images</tt> directory/package contains
+          JPEG images of scoreboard digits.&nbsp; Not used for this
+          version of the source,&nbsp; the images could be used to
+          implement yet another version of the scoreboard that simply
+          displays an image associated with a digit value.&nbsp; A old
+          version of this application originally written in JavaFX
+          Script has an implementation with images, because it was much
+          faster than the rendered bulb and LED components.&nbsp; With
+          JavaFX 2.x, performance is much improved and the need for
+          image based displays was no longer needed.</li>
+        <li>The <tt>scoreboard.util.sounds</tt> directory/package MP3
+          file representing a buzzer sound that could be used to sound a
+          horn either manually or automatically when the clock reaches
+          zero.&nbsp; The horn hs not been fully implemented for this
+          version of the scoreboard.<br>
+        </li>
+      </ol>
+    </a>
+  </body>
+</html>

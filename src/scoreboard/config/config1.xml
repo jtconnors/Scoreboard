@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * Copyright (c) 2013, Jim Connors
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the TimingFramework project nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<!--
+    Sample XML imput file for remote scoreboard.  This file gets read in at
+    startup to posiition the various scoreboard components.  The floating point
+    properties for each component are expressed as a fraction of the
+    overall height or width of the display.  When read in, they'll be
+    multiplied by the real width or height to get an absolute value.
+-->
+
+<root>
+    
+    <config>
+        <name>clock</name>
+        <layoutY>0.025000</layoutY>
+        <layoutXOption>CENTER</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.200000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>homeScore</name>
+        <layoutY>0.102998</layoutY>
+        <layoutXOption>LEFT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.130000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>guestScore</name>
+        <layoutY>0.102998</layoutY>
+        <layoutXOption>RIGHT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.130000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>homeShotsOnGoal</name>
+        <layoutY>0.365000</layoutY>
+        <layoutXOption>ALIGN_LEFT_OF</layoutXOption>
+        <alignObject>shotsOnGoalText</alignObject>
+        <digitHeight>0.090000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>guestShotsOnGoal</name>
+        <layoutY>0.365000</layoutY>
+        <layoutXOption>ALIGN_RIGHT_OF</layoutXOption>
+        <alignObject>shotsOnGoalText</alignObject>
+        <digitHeight>0.090000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>period</name>
+        <layoutY>0.250000</layoutY>
+        <layoutXOption>GROUP_CENTER_RIGHT_WITH</layoutXOption>
+        <alignObject>periodText</alignObject>
+        <digitHeight>0.090000</digitHeight>
+        <overallValue>1</overallValue>
+    </config>
+    <config>
+        <name>homePenalty1</name>
+        <layoutY>0.530000</layoutY>
+        <layoutXOption>LEFT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.130000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>guestPenalty1</name>
+        <layoutY>0.530000</layoutY>
+        <layoutXOption>RIGHT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.130000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>homePenalty2</name>
+        <layoutY>0.762998</layoutY>
+        <layoutXOption>LEFT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.130000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>guestPenalty2</name>
+        <layoutY>0.762998</layoutY>
+        <layoutXOption>RIGHT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <digitHeight>0.130000</digitHeight>
+        <overallValue>0</overallValue>
+    </config>
+    <config>
+        <name>homeText</name>
+        <layoutY>0.025000</layoutY>
+        <layoutXOption>LEFT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <fontSize>0.045000</fontSize>
+        <content>HOME</content>
+    </config>
+    <config>
+        <name>guestText</name>
+        <layoutY>0.025000</layoutY>
+        <layoutXOption>RIGHT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <fontSize>0.045000</fontSize>
+        <content>GUEST</content>
+    </config>
+    <config>
+        <name>periodText</name>
+        <layoutY>0.268501</layoutY>
+        <layoutXOption>GROUP_CENTER_LEFT_WITH</layoutXOption>
+        <alignObject>period</alignObject>
+        <fontSize>0.045000</fontSize>
+        <content>Period</content>
+    </config>
+    <config>
+        <name>shotsOnGoalText</name>
+        <layoutY>0.383501</layoutY>
+        <layoutXOption>CENTER</layoutXOption>
+        <alignObject>null</alignObject>
+        <fontSize>0.045000</fontSize>
+        <content>Shots On Goal</content>
+    </config>
+    <config>
+        <name>homePenaltyText</name>
+        <layoutY>0.685000</layoutY>
+        <layoutXOption>LEFT_JUSTIFY</layoutXOption>
+        <alignObject>null</alignObject>
+        <fontSize>0.045000</fontSize>
+        <content>Player   Penalty</content>
+    </config>
+    <config>
+        <name>guestPenaltyText</name>
+        <layoutY>0.685000</layoutY>
+        <layoutXOption>ALIGN_WITH</layoutXOption>
+        <alignObject>guestPenalty1</alignObject>
+        <fontSize>0.045000</fontSize>
+        <content>Player   Penalty</content>
+    </config>
+    <config>
+        <name>hockeyScoreboard</name>
+        <backgroundColor>7936</backgroundColor>
+    </config>
+    <config>
+        <name>logoImageView</name>
+        <url>logo.png</url>
+        <layoutXOption>CENTER_BETWEEN</layoutXOption>
+        <topLeftObject>homePenalty1</topLeftObject>
+        <bottomRightObject>guestPenalty2</bottomRightObject>
+    </config>
+
+</root>
