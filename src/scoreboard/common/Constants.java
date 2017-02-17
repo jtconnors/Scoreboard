@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -38,12 +38,14 @@ package scoreboard.common;
 
 public class Constants {
     /*
-     * This URL is relative to jar root.
+     * These URLs are relative to jar root.
      * Use "/" to indicate the jar root, and then append path to it.
-     * Using config files outside the jar will have to specify a full URL.
+     * Using files outside the jar will have to specify a full URL.
      */
     public static final String DEFAULT_CONFIG_FILE =
             "/scoreboard/config/config.xml";
+    public static final String DEFAULT_HORN_FILE =
+            "/scoreboard/util/sounds/BUZZER.mp3";
     
     public static final int DEFAULT_DIGIT_HEIGHT = 100;
     public static final int BLANK_DIGIT = 10;
@@ -105,4 +107,9 @@ public class Constants {
     public static final int DEBUG_STATUS = 0x8;
     public static final int DEBUG_ALL =
             DEBUG_IO | DEBUG_EXCEPTIONS | DEBUG_STATUS;
+    /*
+     * Horn on/off
+     */
+    public static final int HORN_OFF = 0;
+    public static final int HORN_ON = 1;
 }

@@ -72,16 +72,33 @@
 
     -->
 
-<target name="-post-jar">
-    <copy todir="${dist.dir}">
-        <fileset dir="scripts" includes="**"/>
-    </copy>
-    <exec executable="${zip.exe}">
-      <arg value="a"/>
-      <arg value="-tzip"/>
-      <arg value="${dist.dir}.zip"/>
-      <arg value="${dist.dir}"/>
-    </exec>
-</target>
+    <!-- Zip up dist directory after build -->
+    <target name="-post-jar">
+        <copy todir="${dist.dir}">
+            <fileset dir="scripts" includes="**"/>
+        </copy>
+        <exec executable="${zip.exe}">
+            <arg value="a"/>
+            <arg value="-tzip"/>
+            <arg value="${dist.dir}.zip"/>
+            <arg value="${dist.dir}"/>
+        </exec>
+    </target>
+
+    <!-- Custom Code Timestamping using Ant's signjar instead of NetBeans -->
+    <target name="sign-jars">
+        <echo message="Using custom code for signing and timestamping via build.xml..."/>
+        <signjar
+            verbose="true"
+            alias="${jnlp.signjar.alias}"
+            storepass="${jnlp.signjar.storepass}"
+            keystore="${jnlp.signjar.keystore}"
+            keypass="${jnlp.signjar.keypass}"
+            tsaurl="${jnlp.signing.tsaurl}">
+            <path>
+                <fileset dir="dist" includes="*.jar" />
+            </path>
+        </signjar>
+    </target>
 
 </project>

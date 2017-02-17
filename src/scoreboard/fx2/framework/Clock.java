@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,6 +31,7 @@
 
 package scoreboard.fx2.framework;
 
+import scoreboard.common.Globals;
 import javafx.scene.Group;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.KeyCode;
@@ -39,7 +40,7 @@ import static scoreboard.common.Constants.MAX_CLOCK_TIME;
 import static scoreboard.common.Constants.BLANK_DIGIT;
 import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
 import static scoreboard.common.Constants.INTER_DIGIT_GAP_FRACTION;
-import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
+import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This abstract class defines the behavior of a scoreboard clock consisting
@@ -54,6 +55,8 @@ import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
  *  scoreboard.fx2.impl.bulb.BulbClock.java code.
  */
 public abstract class Clock extends DisplayableWithDigits {
+    
+    private ScoreboardWithClock scoreboardWithClock;
 
     /*
      * Non-abstract instances of the following Digit variables must
@@ -109,8 +112,8 @@ public abstract class Clock extends DisplayableWithDigits {
     private Circle decimalPoint;
 
 /****************************************************************************
- *     By virtue of extending the DisplayableWithDigits class, the following     *
- *     abstract methods declared in ParentsWithDigits must be defined.      *
+ *   By virtue of extending the DisplayableWithDigits class, the following  *
+ *   abstract methods declared in ParentsWithDigits must be defined.        *
  ****************************************************************************/
 
     /*
@@ -206,7 +209,7 @@ public abstract class Clock extends DisplayableWithDigits {
 
     protected void refreshOnOverallValueChange(int overallValue) {
         setDigits();
-        sendMessageToSocket(varName, overallValue);
+        sendMessageToSocket(varName, String.valueOf(overallValue));
     }
 
     /*
@@ -536,27 +539,31 @@ public abstract class Clock extends DisplayableWithDigits {
     /*
      * Constructors
      */
-    public Clock(String varName, Timer timer) {
-        this(varName, timer, DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT);
+    public Clock(String varName, ScoreboardWithClock scoreboardWithClock,
+            Timer timer) {
+        this(varName, scoreboardWithClock, timer,
+                DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT);
     }
 
-    public Clock(String varName, Timer timer, Color color) {
-        this(varName, timer, color, DEFAULT_DIGIT_HEIGHT);
+    public Clock(String varName, ScoreboardWithClock scoreboardWithClock, 
+            Timer timer, Color color) {
+        this(varName, scoreboardWithClock, timer, color, DEFAULT_DIGIT_HEIGHT);
     }
 
-    public Clock(String varName, Timer timer, double digitHeight) {
-        this(varName, timer, DEFAULT_DIGIT_COLOR, digitHeight);
+    public Clock(String varName, ScoreboardWithClock scoreboardWithClock,
+            Timer timer, double digitHeight) {
+        this(varName, scoreboardWithClock, timer,
+                DEFAULT_DIGIT_COLOR, digitHeight);
     }
 
-    public Clock(String varName, Timer timer, Color color, double digitHeight) {
+    public Clock(String varName, ScoreboardWithClock scoreboardWithClock,
+            Timer timer, Color color, double digitHeight) {
         super();  // Must call superclass constructor first
         this.varName = varName;
+        this.scoreboardWithClock = scoreboardWithClock;
         this.timer = timer;
-//        this.color = color;
         colorProperty().setValue(color);
-//        this.digitHeight = digitHeight;
         digitHeightProperty().setValue(digitHeight);
-//        this.overallValue = 0;
         overallValueProperty().setValue(0);
         this.minOverallValue = 0;
         this.maxOverallValue = MAX_CLOCK_TIME;
@@ -616,6 +623,9 @@ public abstract class Clock extends DisplayableWithDigits {
                     setOverallValue(getOverallValue()-1);
                 } else {
                     getTimer().stop();
+                    if (scoreboardWithClock != null) {
+                        scoreboardWithClock.soundHorn();
+                    }
                 }
             }
         };

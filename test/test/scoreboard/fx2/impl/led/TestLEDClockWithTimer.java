@@ -15,7 +15,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import scoreboard.fx2.impl.led.LEDClock;
 import scoreboard.fx2.framework.Timer;
-import static scoreboard.fx2.framework.FX2Constants.ONE_TENTH_SECOND;
+import static scoreboard.fx2.framework.FxConstants.ONE_TENTH_SECOND;
 
 public class TestLEDClockWithTimer extends Application {
 
@@ -25,7 +25,7 @@ public class TestLEDClockWithTimer extends Application {
         final Timer timer = new Timer(ONE_TENTH_SECOND);
         final Button button = new Button();
         
-        final LEDClock clock = new LEDClock("clock", timer);
+        final LEDClock clock = new LEDClock("clock", null, timer);
         clock.setLayoutX(50);
         clock.setLayoutY(50);
         clock.setColor(Color.BLUE);

@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,11 +31,11 @@
 
 package scoreboard.fx2.impl.bulb;
 
-import scoreboard.fx2.framework.HockeyScoreboard;
+import scoreboard.fx2.framework.hockey.HockeyScoreboard;
 import static scoreboard.common.Constants.DEFAULT_SCOREBOARD_WIDTH;
 import static scoreboard.common.Constants.DEFAULT_SCOREBOARD_HEIGHT;
-import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
-import static scoreboard.fx2.framework.FX2Constants.
+import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import static scoreboard.fx2.framework.FxConstants.
         DEFAULT_SECONDARY_COLOR;
 
 /*
@@ -70,7 +70,7 @@ public class BulbHockeyScoreboard extends HockeyScoreboard {
          * The following variables are implementation specific and must
          * be changed for each implementation of this class.
          */
-        clock = new BulbClock("clock", clockTimer, DEFAULT_DIGIT_COLOR,
+        clock = new BulbClock("clock", this, clockTimer, DEFAULT_DIGIT_COLOR,
                 largeDigitSize);
         homeScore = new BulbTwoDigit("homeScore", DEFAULT_SECONDARY_COLOR,
                 mediumDigitSize);

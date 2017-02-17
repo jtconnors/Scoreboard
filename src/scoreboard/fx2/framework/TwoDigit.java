@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -38,7 +38,8 @@ import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
 import static scoreboard.common.Constants.MIN_TWO_DIGIT_VALUE;
 import static scoreboard.common.Constants.MAX_TWO_DIGIT_VALUE;
 import static scoreboard.common.Constants.INTER_DIGIT_GAP_FRACTION;
-import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
+import scoreboard.common.DigitsDisplayStates;
+import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This abstract class defines the behavior of a Displayable object comprised
@@ -64,7 +65,7 @@ public abstract class TwoDigit extends DisplayableWithDigits {
     public Digit getTensDigit() { return tensDigit; }
     protected Digit onesDigit;
     public Digit getOnesDigit() { return onesDigit; }
-
+    
 /****************************************************************************
  *  By virtue of extending the DisplayableWithDigits class, the following   *
  *  abstract methods declared in DisplayableWithDigits must be defined.     *
@@ -105,9 +106,29 @@ public abstract class TwoDigit extends DisplayableWithDigits {
     }
 
     protected void refreshOnOverallValueChange(int overallValue) {
-        tensDigit.setValue((overallValue % 100) / 10);
-        onesDigit.setValue(overallValue % 10);
-        sendMessageToSocket(varName, overallValue);
+        /*
+         * Special case:  If the allowTrailingZeros property is set to true and
+         * the user clicks on digit and selects zero, then  toggle
+         * the display state between REGULAR and SPECIAL_CASE.  This will
+         * turn on/off the ability to display two digit numbers with a 
+         * preceding zero, for example "00" or "06".  
+         */
+        int displayOverallValue = overallValue;
+        if (isAllowTrailingZeros()) {
+            if (getDigitsDisplayState() == DigitsDisplayStates.BLANK) {
+                displayOverallValue = 0;
+            } else if ((getOverallValue() == getPrevOverallValue()) &&
+                    (getOverallValue() < 10)) {
+                if (getDigitsDisplayState() == DigitsDisplayStates.REGULAR) {
+                    setDigitsDisplayState(DigitsDisplayStates.SPECIAL_CASE);
+                } else if (getDigitsDisplayState() ==
+                        DigitsDisplayStates.SPECIAL_CASE) {
+                    setDigitsDisplayState(DigitsDisplayStates.REGULAR);    
+                }
+            }
+        }
+        setDigits(displayOverallValue);
+        sendMessageToSocket(varName, String.valueOf(displayOverallValue));
     }
 
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
@@ -133,7 +154,78 @@ public abstract class TwoDigit extends DisplayableWithDigits {
 /****************************************************************************
  *          End DisplayableWithDigits method definition section             *
  ****************************************************************************/
-
+    /*
+     * This method overrides the superclass method found in the
+     * DisplayableDigits class.  In order to support special case numbers
+     * that have trailing zeros, we'll perform some additional processing
+     * here.
+     */
+    @Override
+    public void setOverallValueViaUpdate(String overallValueStr) {
+        if (overallValueStr.equals("-1")) {
+            setDigitsDisplayState(DigitsDisplayStates.BLANK);
+            setOverallValue(Integer.parseInt("0"));
+        } else {
+            setOverallValue(Integer.parseInt(overallValueStr));
+        }
+    }
+    /*
+     * This method overrides the superclass method found in the
+     * DisplayableDigits class.  In order to support special case numbers
+     * that have trailing zeros, we'll possibly modify valueStr prior to
+     * calling the superclass sendMessage() method.
+     */
+    @Override
+    public void sendMessageToSocket(String varName, String valueStr) {
+        String modifiedValueStr = valueStr;
+        if (isAllowTrailingZeros()) {
+            int valueInt = Integer.parseInt(valueStr);
+            if (valueInt < 10) {
+                switch (getDigitsDisplayState()) {
+                    case BLANK:
+                        if (valueInt == 0) {
+                            modifiedValueStr = "-1";
+                        }
+                        break;
+                    case SPECIAL_CASE:
+                        modifiedValueStr = "0" + valueStr;
+                }
+            }
+        }
+        super.sendMessageToSocket(varName, modifiedValueStr);
+    }
+    /*
+     * This method overrides the superclass method of the same name.
+     * It executes the superclass method first and the additional
+     * functionality below adjusts how digits
+     * are displayed based upon the display state provided.
+     */
+    @Override
+    public void setDigitsDisplayState(DigitsDisplayStates state) {
+        super.setDigitsDisplayState(state);
+        switch (getDigitsDisplayState()) {
+            case REGULAR:
+                tensDigit.setBlankIfZero(true);
+                onesDigit.setBlankIfZero(false);
+                break;
+            case BLANK:
+                tensDigit.setBlankIfZero(true);
+                onesDigit.setBlankIfZero(true);
+                break;
+            case SPECIAL_CASE:
+                tensDigit.setBlankIfZero(false);
+                onesDigit.setBlankIfZero(false);
+        }
+    }
+    
+    /*
+     * Based upon overallValue, set the individual digits.
+     */
+    private void setDigits(int overallValue) {      
+        tensDigit.setValue((overallValue % 100) / 10);
+        onesDigit.setValue(overallValue % 10);
+    }
+    
     /*
      * Constructors
      */
@@ -161,11 +253,8 @@ public abstract class TwoDigit extends DisplayableWithDigits {
             int overallValue, int minOverallValue, int maxOverallValue) {
         super();  // Must call superclass constructor first
         this.varName = varName;
-//        this.color = color;
         colorProperty().setValue(color);
-//        this.digitHeight = digitHeight;
         digitHeightProperty().setValue(digitHeight);
-//        this.overallValue = overallValue;
         overallValueProperty().setValue(overallValue);
         this.minOverallValue = (minOverallValue >= MIN_TWO_DIGIT_VALUE &&
                 minOverallValue <= maxOverallValue)
@@ -181,10 +270,11 @@ public abstract class TwoDigit extends DisplayableWithDigits {
      */
     protected void init() {
         tensDigit.setIncrementValue(10);
-        tensDigit.setBlankIfZero(true);
         digitArr.add(tensDigit);
         onesDigit.setIncrementValue(1);
         digitArr.add(onesDigit);
+        setAllowTrailingZeroes(false);
+        setDigitsDisplayState(DigitsDisplayStates.REGULAR);
         positionDigits();
         getChildren().add(createKeyPads());
         /*

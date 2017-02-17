@@ -1,9 +1,35 @@
-[]	Fully implement Horn (add sound)
+Bug Fixes:
 
-[]	Separate out Globals, most go to scoreboard.common, the ones specific to
-        JavaFX go to scoreboard.fx2.framework
+[Fixed]	Fix MainRemoteClockOnly.java bug.  File URL referenced points to
+	file:///C:/Users/jtconnor...  which won't work on any other system
+	Point URL to a config file in the Scoreboard.jar instead
 
-[]	Bug displaying player number.  If number ends in 0 (i.e. 10, 20, 30),
+[Fixed]	Bug displaying player number.  If number ends in 0 (i.e. 10, 20, 30),
         that digit is blank.
 
-[]      Tab/Arrow_Key between editiable components on the scoreboard
+Enhancements:
+
+[Done]	Fully implement Horn (add sound)
+	[Done]	Manual horn button
+	[Done]  Sound horn when clock reaches zero
+	[Done]	XML attributes for remote (slave) scoreboard horn
+	[Done]	Option for alternate horn sound - hornURL:URL
+	[Done]	Sound horn for as long as mouse is held down on horn button
+                or until MP3 file representing sound finishes
+
+[Done]  Reorganize packages and code structure
+        [Done]  Separate out Globals, most go to scoreboard.common,
+                the ones specific to JavaFX go to scoreboard.fx2.framework
+        [Done]  Eliminate scoreboard.common.xml package.  Move those source
+                files into scoreboard.fx2.framework and make them base
+                abstract classes.
+        [Done]  Create a scoreboard.fx2.framework.hockey package
+                containing the implementation classes specific for a hockey
+                scoreboard.  The classes extend ones found in
+                scoreboard.fx2.framework
+        [Done]  Eliminate scoreboard.common.networking.simple package and
+                move those classes into Test Packages.
+
+[Done]  Global debugFlags variable with -debug:value command-line switch
+
+[Done]  Allow Penalty player numbers to have a zero prefix (i.e. "00", "06" ...) 

@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,10 +31,12 @@
 
 package scoreboard.fx2.framework;
 
+import scoreboard.common.Globals;
 import java.lang.reflect.Field;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -42,7 +44,8 @@ import javafx.scene.shape.Rectangle;
 import static scoreboard.common.Constants.MAX_PENALTY_TIME;
 import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
 import static scoreboard.common.Constants.INTER_DIGIT_GAP_FRACTION;
-import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
+import scoreboard.common.DigitsDisplayStates;
+import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This abstract class defines the behavior of a Displayable object
@@ -146,11 +149,22 @@ public abstract class Penalty extends DisplayableWithDigits {
     private Rectangle dash;
     private Circle bottomPartOfColon;
     private Circle topPartOfColon;
+    
+    /*
+     * Visual cue via popup to let user know that the Penalty player
+     * number cannot be set until a penalty time is specified.
+     */
+    private String tipStr = "Penalty time must be\nset prior to player number";
+    private final Tooltip tooltip = new Tooltip(tipStr);
+    /*
+     * Mechanism to block playerNumber when not in use.
+     */
+    private Rectangle playerNumberMouseBlocker;
 
-
-/****************************************************************************
- *     By virtue of extending the DisplayableWithDigits class, the following     *
- *     abstract methods declared in ParentsWithDigits must be defined.      *
+/*
+ ****************************************************************************
+ *   By virtue of extending the DisplayableWithDigits class, the following  *
+ *   abstract methods declared in ParentsWithDigits must be defined.        *
  ****************************************************************************/
 
     /*
@@ -192,7 +206,7 @@ public abstract class Penalty extends DisplayableWithDigits {
         playerNumber.setDigitHeight(getDigitHeight());
         double digitWidth =
                 playerNumber.getOnesDigit().getLayoutBounds().getWidth();
-
+       
         dash.setHeight(getDigitHeight() * DASH_HEIGHT_FRACTION);
         dash.setWidth(getDigitHeight() * DASH_WIDTH_FRACTION);
         dash.setLayoutX(playerNumber.getLayoutBounds().getWidth() +
@@ -220,10 +234,20 @@ public abstract class Penalty extends DisplayableWithDigits {
         secondsDigit.setDigitHeight(getDigitHeight());
         secondsDigit.setLayoutX(tenSecondsDigit.getLayoutX() +
                 digitWidth + (INTER_DIGIT_GAP_FRACTION * digitWidth));
+        /*
+         * Mechanism to block input to player number when not in use
+         */
+        playerNumberMouseBlocker = new Rectangle();
+        playerNumberMouseBlocker.setWidth(
+                playerNumber.getLayoutBounds().getWidth());
+        playerNumberMouseBlocker.setHeight(
+                playerNumber.getLayoutBounds().getHeight());
+        playerNumberMouseBlocker.setFill(Color.TRANSPARENT);
+        playerNumberMouseBlocker.setVisible(false);
 
         getChildren().addAll(playerNumber, dash,
                 minutesDigit, tenSecondsDigit, secondsDigit,
-                bottomPartOfColon, topPartOfColon);
+                bottomPartOfColon, topPartOfColon, playerNumberMouseBlocker);
 
         boundingRect.setWidth(getLayoutBounds().getWidth());
         boundingRect.setHeight(getLayoutBounds().getHeight());
@@ -237,7 +261,7 @@ public abstract class Penalty extends DisplayableWithDigits {
     protected void refreshOnOverallValueChange(int overallValue) {
         tenthsRemaining = overallValue * 10;
         setDigits();
-        sendMessageToSocket(varName, overallValue);
+        sendMessageToSocket(varName, String.valueOf(overallValue));
     }
 
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
@@ -351,8 +375,11 @@ public abstract class Penalty extends DisplayableWithDigits {
         bottomPartOfColon = new Circle();
         bottomPartOfColon.setFill(Color.WHITE);
 
-        playerNumber.getOnesDigit().setBlankIfZero(true);
+        playerNumber.setAllowTrailingZeroes(true);
+        playerNumber.setDigitsDisplayState(DigitsDisplayStates.BLANK);
         positionDigits();
+        Tooltip.install(playerNumberMouseBlocker, tooltip);
+        playerNumberMouseBlocker.setVisible(true);
         setDigits();
 
         getChildren().add(createKeyPads());
@@ -380,13 +407,15 @@ public abstract class Penalty extends DisplayableWithDigits {
             public void invoke() {
                 if (tenthsRemaining > 0) {
                     tenthsRemaining -= 1;
+                    if (tenthsRemaining == 0) {
+                        playerNumber.setDigitsDisplayState(
+                            DigitsDisplayStates.BLANK);
+                        getTimer().stop();
+                    }
                     if ((tenthsRemaining % 10) == 0) {
                         setOverallValue(tenthsRemaining / 10);
                     }
-                } else {
-                    playerNumber.setOverallValue(0);
-                    getTimer().stop();
-                }
+                } 
             }
         };
         if (timer != null) {
@@ -394,16 +423,22 @@ public abstract class Penalty extends DisplayableWithDigits {
         }
 
         /*
-         * Listen in on any updates to the overallValue variable.  When it
-         * transitions to zero, blank out the playerNumber.
+         * Listen in on any updates to the Penalty overallValue variable.
+         * When it transitions to/from zero, change the display state.
          */
         overallValueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
-                if (getOverallValue() != 0) {
-                    playerNumber.getOnesDigit().setBlankIfZero(false);
-                } else {
+                // Transition from zero to non-zero
+                if (getPrevOverallValue() == 0 && getOverallValue() > 0) {
+                    playerNumber.setDigitsDisplayState(
+                            DigitsDisplayStates.REGULAR);
+                    playerNumberMouseBlocker.setVisible(false);
+                } // Transition from non-zero to zero
+                else if (getPrevOverallValue() > 0 && getOverallValue() == 0) {
+                    playerNumber.setDigitsDisplayState(
+                            DigitsDisplayStates.BLANK);
+                    playerNumberMouseBlocker.setVisible(true);
                     playerNumber.setOverallValue(0);
-                    playerNumber.getOnesDigit().setBlankIfZero(true);
                 }
             }
         });

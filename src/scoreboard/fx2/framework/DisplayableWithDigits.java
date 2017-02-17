@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,6 +31,7 @@
 
 package scoreboard.fx2.framework;
 
+import scoreboard.common.Globals;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.DoublePropertyBase;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import scoreboard.common.xml.XMLSpec;
+import scoreboard.common.DigitsDisplayStates;
 
 /*
  * DisplayableWithDigits encapsulates the common behavior that classes with one
@@ -54,6 +55,82 @@ import scoreboard.common.xml.XMLSpec;
  * and implement the abstract methods declared below.
  */
 public abstract class DisplayableWithDigits extends Displayable {
+    
+    /**
+     * Handles special case where numbers with trailing zeroes are allowed.
+     * One such example is player numbers like "00".
+     */
+    private BooleanProperty allowTrailingZeros;
+
+    public final void setAllowTrailingZeroes(boolean value) {
+        allowTrailingZerosProperty().setValue(value);
+    }
+
+    public final boolean isAllowTrailingZeros() {
+        return allowTrailingZeros == null ?
+                false : allowTrailingZeros.getValue();
+    }
+
+    public final BooleanProperty allowTrailingZerosProperty() {
+        if (allowTrailingZeros == null) {
+            allowTrailingZeros = new BooleanPropertyBase() {
+            
+                @Override
+                public Object getBean() {
+                    return DisplayableWithDigits.this;
+                }
+                
+                @Override
+                public String getName() {
+                    return "allowTrailingZeros";
+                }
+            };
+        }
+        return allowTrailingZeros;
+    }
+    
+    /**
+     * Defines the display state of the Digits.
+     */
+    private ObjectProperty<DigitsDisplayStates> digitsDisplayState;
+
+    protected void setDigitsDisplayState(DigitsDisplayStates state) {
+        prevDigitsDisplayState = getDigitsDisplayState();
+        digitsDisplayStateProperty().setValue(state);
+    }
+
+    protected final DigitsDisplayStates getDigitsDisplayState() {
+        if (digitsDisplayState == null) {
+            return DigitsDisplayStates.REGULAR;
+        } else {
+            return digitsDisplayState.getValue();
+        }
+    }
+
+    protected final ObjectProperty<DigitsDisplayStates>
+            digitsDisplayStateProperty() {
+        if (digitsDisplayState == null) {
+             digitsDisplayState = new ObjectPropertyBase<DigitsDisplayStates>(){
+                
+                @Override
+                public Object getBean() {
+                    return DisplayableWithDigits.this;
+                }
+                
+                @Override
+                public String getName() {
+                    return "digitsDislayState";
+                }
+            };
+        }
+        return digitsDisplayState;
+    }
+    
+    private DigitsDisplayStates prevDigitsDisplayState;
+    
+    protected DigitsDisplayStates getPrevDigitsDisplayState() {
+        return prevDigitsDisplayState;
+    }
 
     /**
      * Defines the fill Color of the Digits.
@@ -209,6 +286,7 @@ public abstract class DisplayableWithDigits extends Displayable {
     public final void setOverallValue(int value) {
         if ((value <= maxOverallValue) &&
             (value >= minOverallValue)) {
+            prevOverallValue = getOverallValue();
             overallValueProperty().setValue(value);
             refreshOnOverallValueChange(value);
         }
@@ -235,6 +313,23 @@ public abstract class DisplayableWithDigits extends Displayable {
         }
         return overallValue;
     }
+    
+    /*
+     * This method is used by remote scoreboards to update any implementation
+     * of DisplayableWithDigts.  The default thing to do almost always is to 
+     * simply call setOverallValue(), but there are some special cases which
+     * may require additional processing.  In that case this methid should be
+     * overriden.
+     */
+    public void setOverallValueViaUpdate(String overallValueStr) {
+        setOverallValue(Integer.parseInt(overallValueStr));
+    }
+    
+    private int prevOverallValue;
+    
+    protected int getPrevOverallValue() {
+        return prevOverallValue;
+    }
 
     /*
      * An implementing class will contain one or more digits.  They must
@@ -246,16 +341,16 @@ public abstract class DisplayableWithDigits extends Displayable {
      * This method gets called by all DisplayableWithDigits instances that
      * want to send update message on to a socket.
      */
-    protected void sendMessageToSocket(String varName, int value) {
+    public void sendMessageToSocket(String varName, String valueStr) {
         if (Globals.useIPSocket) {
-            if (Globals.multipleSocketWriter != null) {
-                Globals.multipleSocketWriter.postUpdate(
-                        XMLSpec.updateStr(varName, value));
+            if (FxGlobals.multipleSocketWriter != null) {
+                FxGlobals.multipleSocketWriter.postUpdate(
+                        XMLSpec.updateStr(varName, valueStr));
             }
         } else {
-            if (Globals.multicastWriter != null) {
-                Globals.multicastWriter.sendMessage(
-                        XMLSpec.updateStr(varName, value));
+            if (FxGlobals.multicastWriter != null) {
+                FxGlobals.multicastWriter.sendMessage(
+                        XMLSpec.updateStr(varName, valueStr));
             }
         }
     }
@@ -324,8 +419,11 @@ public abstract class DisplayableWithDigits extends Displayable {
             case DIGIT7:
             case DIGIT8:
             case DIGIT9:
-                setOverallValue(calculateKeyNumValue((Digit)focusedDigit,
-                        keyCode));
+                // only call setOverallValue() if value has changed
+                int newVal = calculateKeyNumValue((Digit)focusedDigit, keyCode);
+                if (newVal != getOverallValue()) {
+                    setOverallValue(newVal);
+                }    
                 break;
             case UP:
                 setOverallValue(calculateKeyUpValue((Digit)focusedDigit));

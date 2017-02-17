@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -37,7 +37,7 @@ import javafx.scene.paint.Color;
 import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
 import static scoreboard.common.Constants.MIN_DIGIT_VALUE;
 import static scoreboard.common.Constants.MAX_DIGIT_VALUE;
-import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
+import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This abstract class defines the behavior of a Displayable object comprised
@@ -94,7 +94,7 @@ public abstract class SingleDigit extends DisplayableWithDigits {
 
     protected void refreshOnOverallValueChange(int overallValue) {
         singleDigit.setValue(overallValue % 10);
-        sendMessageToSocket(varName, overallValue);
+        sendMessageToSocket(varName, String.valueOf(overallValue));
     }
 
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
@@ -139,11 +139,8 @@ public abstract class SingleDigit extends DisplayableWithDigits {
             int overallValue, int minOverallValue, int maxOverallValue) {
         super();  // Must call superclass constructor first
         this.varName = varName;
-//        this.color = color;
         colorProperty().setValue(color);
-//        this.digitHeight = digitHeight;
         digitHeightProperty().setValue(digitHeight);
-//        this.overallValue = overallValue;
         overallValueProperty().setValue(overallValue);
         this.minOverallValue = (minOverallValue >= MIN_DIGIT_VALUE &&
                 minOverallValue <= maxOverallValue)

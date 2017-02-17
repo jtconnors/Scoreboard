@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,11 +32,13 @@
 package scoreboard.fx2;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import scoreboard.fx2.impl.bulb.BulbHockeyScoreboard;
-import scoreboard.fx2.framework.Globals;
+import scoreboard.common.Globals;
 
 
 public class MainRemoteClockOnly extends Application {
@@ -52,15 +54,23 @@ public class MainRemoteClockOnly extends Application {
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     public static void main(String[] args) {
         Globals.isSlave = true;
         Globals.useIPSocket = true;
         Globals.displaySocket = true;
-        Globals.configURL = 
-                "file:///C:/Users/jtconnor/Documents/NetBeansProjects/projects-Scoreboard/Scoreboard/src/scoreboard/config/clock_only_config.xml";
-        
+        /*
+         * A URL reference starting with "/" will be interpreted as a file
+         * inside the Scoreboard.jar file.  To reference anything else, use the
+         * full blown URL syntax: i.e:
+         *    file:///C:/Users/jtconnor/Documents/clock_only_config.xml";
+         */
+        Globals.configURL = "/scoreboard/config/clock_only_config.xml";
         Globals.parseArgs(args);
         
         Application.launch(MainRemoteClockOnly.class, args);

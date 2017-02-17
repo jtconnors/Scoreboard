@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,13 +32,15 @@
 package scoreboard.fx2;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import scoreboard.fx2.impl.bulb.BulbHockeyScoreboard;
-import scoreboard.fx2.framework.Globals;
+import scoreboard.common.Globals;
 
 public class MainRemoteFullScreenTV extends Application {
 
@@ -60,6 +62,10 @@ public class MainRemoteFullScreenTV extends Application {
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     public static void main(String[] args) {

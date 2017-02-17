@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of this project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -35,8 +35,8 @@ import javafx.scene.paint.Color;
 import scoreboard.fx2.framework.Timer;
 import scoreboard.fx2.framework.Penalty;
 import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.fx2.framework.FX2Constants.DEFAULT_DIGIT_COLOR;
-import static scoreboard.fx2.framework.FX2Constants.
+import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import static scoreboard.fx2.framework.FxConstants.
         DEFAULT_SECONDARY_COLOR;
 
 /*

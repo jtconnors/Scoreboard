@@ -12,7 +12,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the TimingFramework project nor the names of its
+ *   * Neither the name of the This project nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,7 +33,7 @@ package scoreboard.fx2.networking;
 
 import javafx.application.Platform;
 import scoreboard.common.networking.MulticastConnection;
-import scoreboard.fx2.framework.Globals;
+import scoreboard.common.Globals;
 import static scoreboard.common.Constants.DEFAULT_SESSION_ADDR;
 import static scoreboard.common.Constants.DEFAULT_PORT;
 import static scoreboard.common.Constants.DEBUG_NONE;
