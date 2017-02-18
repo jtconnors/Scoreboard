@@ -31,6 +31,7 @@
 
 package scoreboard.fx2.framework;
 
+import java.lang.invoke.MethodHandles;
 import scoreboard.common.Globals;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.BooleanPropertyBase;
@@ -40,13 +41,14 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import scoreboard.common.Constants;
 import scoreboard.common.DigitsDisplayStates;
 
 /*
@@ -55,6 +57,9 @@ import scoreboard.common.DigitsDisplayStates;
  * and implement the abstract methods declared below.
  */
 public abstract class DisplayableWithDigits extends Displayable {
+   
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
     
     /**
      * Handles special case where numbers with trailing zeroes are allowed.
@@ -335,22 +340,25 @@ public abstract class DisplayableWithDigits extends Displayable {
      * An implementing class will contain one or more digits.  They must
      * be inserted into the digitArr List.
      */
-    protected ArrayList<Digit> digitArr = new ArrayList<Digit>();
+    protected ArrayList<Digit> digitArr = new ArrayList<>();
     
     /*
      * This method gets called by all DisplayableWithDigits instances that
      * want to send update message on to a socket.
      */
     public void sendMessageToSocket(String varName, String valueStr) {
-        if (Globals.useIPSocket) {
-            if (FxGlobals.multipleSocketWriter != null) {
-                FxGlobals.multipleSocketWriter.postUpdate(
-                        XMLSpec.updateStr(varName, valueStr));
+        String msg = XMLSpec.updateStr(varName, valueStr);
+        if ((Globals.instance().debugFlags & 
+                Constants.instance().DEBUG_XMLOUTPUT) != 0) {
+            LOGGER.info(msg); 
+        }
+        if (Globals.instance().useIPSocket) {
+            if (FxGlobals.instance().multipleSocketWriter != null) {
+                FxGlobals.instance().multipleSocketWriter.postUpdate(msg);
             }
         } else {
-            if (FxGlobals.multicastWriter != null) {
-                FxGlobals.multicastWriter.sendMessage(
-                        XMLSpec.updateStr(varName, valueStr));
+            if (FxGlobals.instance().multicastWriter != null) {
+                FxGlobals.instance().multicastWriter.sendMessage(msg);
             }
         }
     }
@@ -396,8 +404,8 @@ public abstract class DisplayableWithDigits extends Displayable {
          * get propagated both to the KeyPad and here.  Why?  This kludge
          * will prevent the key event from being processed twice.
          */
-        if (Globals.keyEventAlreadyProcessed) {
-            Globals.keyEventAlreadyProcessed = false;
+        if (Globals.instance().keyEventAlreadyProcessed) {
+            Globals.instance().keyEventAlreadyProcessed = false;
             return;
         }
         /*
@@ -428,19 +436,23 @@ public abstract class DisplayableWithDigits extends Displayable {
             case UP:
                 setOverallValue(calculateKeyUpValue((Digit)focusedDigit));
                 break;
-            case DOWN:
+            case DOWN:                
                 setOverallValue(calculateKeyDownValue((Digit)focusedDigit));
                 break;
             case LEFT:
-                if (Globals.lastFocused != Globals.lastFocused.getKeyLeftNode()) {
-                    Globals.lastFocused.unShowFocusHint();
-                    Globals.lastFocused.getKeyLeftNode().showFocusHint();
+                if (Globals.instance().lastFocused != 
+                        Globals.instance().lastFocused.getKeyLeftNode()) {
+                    Globals.instance().lastFocused.unShowFocusHint();
+                    Globals.instance().
+                            lastFocused.getKeyLeftNode().showFocusHint();
                 }
                 break;
             case RIGHT:
-                if (Globals.lastFocused != Globals.lastFocused.getKeyRightNode()) {
-                    Globals.lastFocused.unShowFocusHint();
-                    Globals.lastFocused.getKeyRightNode().showFocusHint();
+                if (Globals.instance().lastFocused != 
+                        Globals.instance().lastFocused.getKeyRightNode()) {
+                    Globals.instance().lastFocused.unShowFocusHint();
+                    Globals.instance().
+                            lastFocused.getKeyRightNode().showFocusHint();
                 }
                 break;
             case ENTER:
@@ -456,10 +468,8 @@ public abstract class DisplayableWithDigits extends Displayable {
         boundingRect = new Rectangle();  // dimensions set by subclasses
         boundingRect.setFill(Color.TRANSPARENT);
         boundingRect.setVisible(false);
-        setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                processKeyEvent(ke.getCode());
-            }
+        setOnKeyPressed((KeyEvent ke) -> {
+            processKeyEvent(ke.getCode());
         });
     }
 }

@@ -32,11 +32,9 @@
 package scoreboard.fx2.impl.led;
 
 import javafx.scene.paint.Color;
+import scoreboard.common.Constants;
+import scoreboard.fx2.framework.FxConstants;
 import scoreboard.fx2.framework.SingleDigit;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.MIN_DIGIT_VALUE;
-import static scoreboard.common.Constants.MAX_DIGIT_VALUE;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This class extends the abstract SingleDigit class and must be written in
@@ -53,12 +51,16 @@ import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 public class LEDSingleDigit extends SingleDigit {
 
     public LEDSingleDigit(String varName) {
-        this(varName, DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(varName, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public LEDSingleDigit(String varName, Color color, double digitHeight) {
-        this(varName, color, digitHeight, 0, MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(varName, color, digitHeight, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public LEDSingleDigit(String varName, Color color, double digitHeight,

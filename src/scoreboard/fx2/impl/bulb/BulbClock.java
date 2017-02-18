@@ -32,10 +32,10 @@
 package scoreboard.fx2.impl.bulb;
 
 import javafx.scene.paint.Color;
+import scoreboard.common.Constants;
 import scoreboard.fx2.framework.Timer;
 import scoreboard.fx2.framework.Clock;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import scoreboard.fx2.framework.FxConstants;
 import scoreboard.fx2.framework.ScoreboardWithClock;
 
 /*
@@ -55,7 +55,8 @@ public class BulbClock extends Clock {
     public BulbClock(String varName, ScoreboardWithClock scoreboardWithClock,
             Timer timer) {
         this(varName, scoreboardWithClock, timer,
-                DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT);
     }
 
     public BulbClock(String varName, ScoreboardWithClock scoreboardWithClock,

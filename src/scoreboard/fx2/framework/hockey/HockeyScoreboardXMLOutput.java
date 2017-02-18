@@ -31,11 +31,14 @@
 
 package scoreboard.fx2.framework.hockey;
 
+import java.lang.invoke.MethodHandles;
 import scoreboard.fx2.framework.XMLOutput;
 import scoreboard.common.LayoutXOptions;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 import scoreboard.common.ScoreboardOutputInterface;
+import scoreboard.common.Utils;
 import scoreboard.fx2.framework.XMLSpec;
 
 /*
@@ -43,6 +46,9 @@ import scoreboard.fx2.framework.XMLSpec;
  * Scoreboard implementation and extends the abstract XMLOutput class.
  */
 public class HockeyScoreboardXMLOutput extends XMLOutput {
+    
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     public HockeyScoreboardXMLOutput(
             ScoreboardOutputInterface scoreboardOutputInterface) {
@@ -60,22 +66,27 @@ public class HockeyScoreboardXMLOutput extends XMLOutput {
             try {
                 field = scoreboardClass.getField(fieldName);
                 String typeStr = field.getType().getSimpleName();
-                if (typeStr.equals(XMLSpec.TYPE_TextNode)) {
-                    dumpTextNode(field);
-                } else if (typeStr.equals(XMLSpec.TYPE_SingleDigit) ||
-                       typeStr.equals(XMLSpec.TYPE_TwoDigit) ||
-                       typeStr.equals(HockeyScoreboardXMLSpec.TYPE_Penalty) ||
-                       typeStr.equals(XMLSpec.TYPE_Clock)) {
-                    dumpDisplayableWithDigits(field);
-                } else if (typeStr.equals(
-                        HockeyScoreboardXMLSpec.TYPE_HockeyScoreboard)) {
-                    dumpHockeyScoreboard(field);
-                } else if (typeStr.equals(
-                        HockeyScoreboardXMLSpec.TYPE_ImageView)) {
-                    dumpImageView(field);
+                switch (typeStr) {
+                    case XMLSpec.TYPE_TextNode:
+                        dumpTextNode(field);
+                        break;
+                    case XMLSpec.TYPE_SingleDigit:
+                    case XMLSpec.TYPE_TwoDigit:
+                    case HockeyScoreboardXMLSpec.TYPE_Penalty:
+                    case XMLSpec.TYPE_Clock:
+                        dumpDisplayableWithDigits(field);
+                        break;
+                    case HockeyScoreboardXMLSpec.TYPE_HockeyScoreboard:
+                        dumpHockeyScoreboard(field);
+                        break;
+                    case HockeyScoreboardXMLSpec.TYPE_ImageView:
+                        dumpImageView(field);
+                        break;
+                    default:
+                        break;
                 }
-            }  catch (Exception e) {
-                e.printStackTrace();
+            }  catch (NoSuchFieldException | SecurityException e) {
+                LOGGER.info(Utils.ExceptionStackTraceAsString(e));
             }
         }
     }
@@ -110,8 +121,9 @@ public class HockeyScoreboardXMLOutput extends XMLOutput {
                 XMLSpec.configDisplayableWithDigitsStr(variableName,
                 layoutY, layoutXOption.toString(), alignWithStr,
                 digitHeight, overallValue));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | IllegalArgumentException |
+                NoSuchMethodException | SecurityException e) {
+            LOGGER.severe(Utils.ExceptionStackTraceAsString(e));
         }
     }
 
@@ -126,8 +138,9 @@ public class HockeyScoreboardXMLOutput extends XMLOutput {
             System.out.println(
                     HockeyScoreboardXMLSpec.configHockeyScoreboardStr(
                     variableName, backgroundColorVal));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | IllegalArgumentException |
+                NoSuchMethodException | SecurityException e) {
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
         }
     }
 
@@ -150,8 +163,8 @@ public class HockeyScoreboardXMLOutput extends XMLOutput {
                             HockeyScoreboardXMLSpec.NAME_homePenalty1,
                             HockeyScoreboardXMLSpec.NAME_guestPenalty2));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
         }
     }
 }

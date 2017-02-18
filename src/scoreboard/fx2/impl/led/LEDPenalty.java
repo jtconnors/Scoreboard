@@ -32,12 +32,10 @@
 package scoreboard.fx2.impl.led;
 
 import javafx.scene.paint.Color;
+import scoreboard.common.Constants;
+import scoreboard.fx2.framework.FxConstants;
 import scoreboard.fx2.framework.Timer;
 import scoreboard.fx2.framework.Penalty;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
-import static scoreboard.fx2.framework.FxConstants.
-        DEFAULT_SECONDARY_COLOR;
 
 /*
  * This class extends the abstract Penalty class and must be written in
@@ -54,7 +52,8 @@ import static scoreboard.fx2.framework.FxConstants.
 public class LEDPenalty extends Penalty {
 
     public LEDPenalty(String varName, Timer timer) {
-        this(varName, timer, DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT);
+        this(varName, timer, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT);
     }
 
     public LEDPenalty(String varName, Timer timer, Color digitColor,
@@ -65,7 +64,8 @@ public class LEDPenalty extends Penalty {
          * be changed for each implementation of this class.
          */
         playerNumber = new LEDTwoDigit(varName + "playerNumber",
-                DEFAULT_SECONDARY_COLOR, getDigitHeight());
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
+                getDigitHeight());
         minutesDigit = new LEDDigit(getColor(), getDigitHeight());
         tenSecondsDigit = new LEDDigit(getColor(), getDigitHeight());
         secondsDigit = new LEDDigit(getColor(), getDigitHeight());

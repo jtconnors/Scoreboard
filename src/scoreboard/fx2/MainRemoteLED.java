@@ -48,28 +48,28 @@ public class MainRemoteLED extends Application {
         Group group = new Group();
         LEDHockeyScoreboard bulbScoreboard =
 //                new LEDHockeyScoreboard(711, 400, Globals.isSlave);
-                new LEDHockeyScoreboard(1280, 700, Globals.isSlave);
-        Globals.hockeyScoreboardRef = bulbScoreboard;
+                new LEDHockeyScoreboard(1280, 700, Globals.instance().isSlave);
+        Globals.instance().hockeyScoreboardRef = bulbScoreboard;
         group.getChildren().add(bulbScoreboard);
         Scene scene = new Scene(group, group.getLayoutBounds().getWidth(),
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
-        stage.show();
-        stage.setOnCloseRequest((WindowEvent we) -> {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
     }
 
     public static void main(String[] args) {
-        Globals.isSlave = true;
+        Globals.instance().isSlave = true;
 //        Globals.isTV = true;
 //        Globals.unlitOpacity = 0.05;
-        Globals.useIPSocket = true;
-        Globals.displaySocket = true;
-        Globals.hornURL = "/scoreboard/util/sounds/AirHorn.mp3";
+        Globals.instance().useIPSocket = true;
+        Globals.instance().displaySocket = true;
+        Globals.instance().hornURL = "/scoreboard/util/sounds/AirHorn.mp3";
         
-        Globals.parseArgs(args);
+        Globals.instance().parseArgs(args);
         
         Application.launch(MainRemoteLED.class, args);
     }

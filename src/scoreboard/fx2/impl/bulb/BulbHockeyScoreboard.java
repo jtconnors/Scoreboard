@@ -31,12 +31,9 @@
 
 package scoreboard.fx2.impl.bulb;
 
+import scoreboard.common.Constants;
+import scoreboard.fx2.framework.FxConstants;
 import scoreboard.fx2.framework.hockey.HockeyScoreboard;
-import static scoreboard.common.Constants.DEFAULT_SCOREBOARD_WIDTH;
-import static scoreboard.common.Constants.DEFAULT_SCOREBOARD_HEIGHT;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
-import static scoreboard.fx2.framework.FxConstants.
-        DEFAULT_SECONDARY_COLOR;
 
 /*
  * This class extends the abstract Scoreboard class and must be written in
@@ -56,7 +53,8 @@ import static scoreboard.fx2.framework.FxConstants.
 public class BulbHockeyScoreboard extends HockeyScoreboard {
 
     public BulbHockeyScoreboard() {
-        this(DEFAULT_SCOREBOARD_WIDTH, DEFAULT_SCOREBOARD_HEIGHT, false);
+        this(Constants.instance().DEFAULT_SCOREBOARD_WIDTH,
+                Constants.instance().DEFAULT_SCOREBOARD_HEIGHT, false);
     }
 
     public BulbHockeyScoreboard(double width, double height) {
@@ -70,26 +68,29 @@ public class BulbHockeyScoreboard extends HockeyScoreboard {
          * The following variables are implementation specific and must
          * be changed for each implementation of this class.
          */
-        clock = new BulbClock("clock", this, clockTimer, DEFAULT_DIGIT_COLOR,
-                largeDigitSize);
-        homeScore = new BulbTwoDigit("homeScore", DEFAULT_SECONDARY_COLOR,
+        clock = new BulbClock("clock", this, clockTimer,
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, largeDigitSize);
+        homeScore = new BulbTwoDigit("homeScore",
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
                 mediumDigitSize);
-        guestScore = new BulbTwoDigit("guestScore", DEFAULT_SECONDARY_COLOR,
+        guestScore = new BulbTwoDigit("guestScore",
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
                 mediumDigitSize);
-        period = new BulbSingleDigit("period", DEFAULT_SECONDARY_COLOR,
+        period = new BulbSingleDigit("period",
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
                 smallDigitSize, 1, 1, 4);
         homeShotsOnGoal = new BulbTwoDigit("homeShotsOnGoal", 
-                DEFAULT_SECONDARY_COLOR, smallDigitSize);
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR, smallDigitSize);
         guestShotsOnGoal = new BulbTwoDigit("guestShotsOnGoal",
-                DEFAULT_SECONDARY_COLOR, smallDigitSize);
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR, smallDigitSize);
         homePenalty1 = new BulbPenalty("homePenalty1", homePenalty1Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         guestPenalty1 = new BulbPenalty("guestPenalty1", guestPenalty1Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         homePenalty2 = new BulbPenalty("homePenalty2", homePenalty2Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         guestPenalty2 = new BulbPenalty("guestPenalty2", guestPenalty2Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         /*
          * End implementation specific section.
          */

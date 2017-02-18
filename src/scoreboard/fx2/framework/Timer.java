@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-import static scoreboard.fx2.framework.FxConstants.ONE_TENTH_SECOND;
 
 /*
  * Simple Timer class with the following features:
@@ -57,7 +56,7 @@ public class Timer {
     private ArrayList<FunctionPtr> handlers;
 
     public Timer() {
-        this(ONE_TENTH_SECOND);
+        this(FxConstants.instance().ONE_TENTH_SECOND);
     }
 
     public Timer(Duration duration) {
@@ -67,6 +66,7 @@ public class Timer {
         timeline.setCycleCount(Timeline.INDEFINITE);
         final KeyFrame kf = new KeyFrame(duration,
             new EventHandler<ActionEvent>() {
+                @Override
                 public void handle(ActionEvent event) {
                     for (FunctionPtr handler : handlers) {
                         handler.invoke();

@@ -32,11 +32,10 @@
 package scoreboard.fx2.networking;
 
 import javafx.application.Platform;
-import scoreboard.common.networking.MulticastConnection;
+import com.jtconnors.socket.Constants;
+import com.jtconnors.socket.DebugFlags;
+import com.jtconnors.socket.MulticastConnection;
 import scoreboard.common.Globals;
-import static scoreboard.common.Constants.DEFAULT_SESSION_ADDR;
-import static scoreboard.common.Constants.DEFAULT_PORT;
-import static scoreboard.common.Constants.DEBUG_NONE;
 
 public class FxMulticastWriter extends MulticastConnection {
     
@@ -55,26 +54,29 @@ public class FxMulticastWriter extends MulticastConnection {
     /**
      * Called whenever the open/closed status of the Socket
      * changes.  In JavaFX 2.0, this method must be run on the
-     * main thread.  This is accomplished by the Platform.runLater() call.
+     * main thread.  This is accomplished by the Platform.runLater() call
+     * which utilizes the {@code Runnable} interface, simplified by the
+     * lambda expression used in this method.
      * Failure to do so *will* result in strange errors and exceptions.
      * @param isClosed true if the socket is closed
      */
     @Override
     public void onClosedStatus(final boolean isClosed) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Globals.hockeyScoreboardRef.updateStatusRow(isClosed ? 0 : 1);
-            }
+        Platform.runLater(() -> {
+            Globals.instance()
+                    .hockeyScoreboardRef.updateStatusRow(isClosed ? 0 : 1);
         });
     }
     
     public FxMulticastWriter() {
-        super(DEFAULT_SESSION_ADDR, DEFAULT_PORT, DEBUG_NONE);
+        super(Constants.instance().DEFAULT_SESSION_ADDR,
+                Constants.instance().DEFAULT_PORT,
+                DebugFlags.instance().DEBUG_NONE);
     }
 
     public FxMulticastWriter(int portNum) {
-        super(DEFAULT_SESSION_ADDR, portNum, DEBUG_NONE);
+        super(Constants.instance().DEFAULT_SESSION_ADDR, portNum,
+                DebugFlags.instance().DEBUG_NONE);
     }
 
     public FxMulticastWriter(String addr, int portNum, int debugFlags) {

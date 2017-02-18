@@ -47,31 +47,32 @@ public class MainRemoteClockOnly extends Application {
     public void start(Stage stage) {
         Group group = new Group();
         BulbHockeyScoreboard bulbScoreboard =
-                new BulbHockeyScoreboard(711, 400, Globals.isSlave);
-        Globals.hockeyScoreboardRef = bulbScoreboard;
+                new BulbHockeyScoreboard(711, 400, Globals.instance().isSlave);
+        Globals.instance().hockeyScoreboardRef = bulbScoreboard;
         group.getChildren().add(bulbScoreboard);
         Scene scene = new Scene(group, group.getLayoutBounds().getWidth(),
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
-        stage.show();
-        stage.setOnCloseRequest((WindowEvent we) -> {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
     }
 
     public static void main(String[] args) {
-        Globals.isSlave = true;
-        Globals.useIPSocket = true;
-        Globals.displaySocket = true;
+        Globals.instance().isSlave = true;
+        Globals.instance().useIPSocket = true;
+        Globals.instance().displaySocket = true;
         /*
          * A URL reference starting with "/" will be interpreted as a file
          * inside the Scoreboard.jar file.  To reference anything else, use the
          * full blown URL syntax: i.e:
          *    file:///C:/Users/jtconnor/Documents/clock_only_config.xml";
          */
-        Globals.configURL = "/scoreboard/config/clock_only_config.xml";
-        Globals.parseArgs(args);
+        Globals.instance().configURL =
+                "/scoreboard/config/clock_only_config.xml";
+        Globals.instance().parseArgs(args);
         
         Application.launch(MainRemoteClockOnly.class, args);
     }

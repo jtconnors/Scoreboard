@@ -31,10 +31,14 @@
 
 package scoreboard.fx2.framework;
 
+import java.lang.invoke.MethodHandles;
 import scoreboard.common.LayoutXOptions;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 import scoreboard.common.ScoreboardOutputInterface;
+import scoreboard.common.Utils;
 import static scoreboard.fx2.framework.XMLSpec.*;
 
 /*
@@ -43,6 +47,9 @@ import static scoreboard.fx2.framework.XMLSpec.*;
  * subsequently read in by a remote scorebord to configure its display.
  */
 public abstract class XMLOutput {
+    
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     protected ScoreboardOutputInterface scoreboardOutputInterface;
     protected Class scoreboardClass;
@@ -67,8 +74,10 @@ public abstract class XMLOutput {
             Class fieldClass = field.get(scoreboard).getClass();
             Method method = fieldClass.getMethod(methodStr);
             return method.invoke(field.get(scoreboard));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | IllegalArgumentException | 
+                NoSuchMethodException | SecurityException |
+                InvocationTargetException e) {
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
         }
         return null;
     }
@@ -90,7 +99,7 @@ public abstract class XMLOutput {
                 layoutY, layoutXOption.toString(), alignWithStr,
                 fontSize, content));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Jim Connors
+ * Copyright (c) 2016, Jim Connors
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,17 +31,23 @@
 
 package scoreboard.fx2.networking;
 
-import java.net.*;
-import scoreboard.common.networking.GenericSocket;
-import scoreboard.common.networking.SocketListener;
-import static scoreboard.common.Constants.DEFAULT_HOST;
-import static scoreboard.common.Constants.DEFAULT_PORT;
-import static scoreboard.common.Constants.DEBUG_STATUS;
-import static scoreboard.common.Constants.DEBUG_EXCEPTIONS;
-import static scoreboard.common.Constants.DEBUG_NONE;
+import com.jtconnors.socket.GenericSocket;
+import com.jtconnors.socket.SocketListener;
+import com.jtconnors.socket.DebugFlags;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FxSocketClient extends GenericSocket
         implements SocketListener {
+    
+    private static final Logger LOGGER = Logger.getLogger(
+            FxSocketClient.class.getName());
 
     public String host;
     private SocketListener fxListener;
@@ -49,43 +55,42 @@ public class FxSocketClient extends GenericSocket
     /**
      * Called whenever a message is read from the socket.  In
      * JavaFX, this method must be run on the main thread and
-     * is accomplished by the Entry.deferAction() call.  Failure to do so
-     * *will* result in strange errors and exceptions.
+     * is accomplished by the Entry.deferAction() call 
+     * which utilizes the {@code Runnable} interface, simplified by the
+     * lambda expression used in this method.
+     * Failure to do so *will* result in strange errors and exceptions.
      * @param line Line of text read from the socket.
      */
     @Override
     public void onMessage(final String line) {
-        javafx.application.Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                fxListener.onMessage(line);
-            }
+        javafx.application.Platform.runLater(() -> {
+            fxListener.onMessage(line);
         });
     }
 
     /**
      * Called whenever the open/closed status of the Socket
      * changes.  In JavaFX, this method must be run on the main thread and
-     * is accomplished by the Entry.deferAction() call.  Failure to do so
-     * will* result in strange errors and exceptions.
+     * is accomplished by the Entry.deferAction() call 
+     * which utilizes the {@code Runnable} interface, simplified by the
+     * lambda expression used in this method.
+     * Failure to do so *will* result in strange errors and exceptions.
      * @param isClosed true if the socket is closed
      */
     @Override
     public void onClosedStatus(final boolean isClosed) {
-        javafx.application.Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                fxListener.onClosedStatus(isClosed);
-            }
+        javafx.application.Platform.runLater(() -> {
+            fxListener.onClosedStatus(isClosed);
         });
     }
 
     /**
      * Initialize the SocketClient up to and including issuing the accept()
      * method on its socketConnection.
+     * @throws java.net.SocketException
      */
     @Override
-    public void initSocketConnection() throws SocketException {
+    protected void initSocketConnection() throws SocketException {
         try {
             socketConnection = new Socket();
             /*
@@ -96,14 +101,18 @@ public class FxSocketClient extends GenericSocket
             /*
              * Create a socket connection to the server
              */
-            socketConnection.connect(new InetSocketAddress(host, port));
-            if (debugFlagIsSet(DEBUG_STATUS)) {
-                System.out.println("Connected to " + host
-                        + "at port " + port);
+            socketConnection.connect(new InetSocketAddress(host, getPort()));
+            if (debugFlagIsSet(DebugFlags.instance().DEBUG_STATUS)) {
+                LOGGER.log(Level.INFO, 
+                        "Connected to {0}at port {1}",
+                        new Object[]{host, getPort()});
+            } else {
             }
-        } catch (Exception e) {
-            if (debugFlagIsSet(DEBUG_EXCEPTIONS)) {
-                e.printStackTrace();
+        } catch (IOException e) {
+            if (debugFlagIsSet(DebugFlags.instance().DEBUG_EXCEPTIONS)) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                LOGGER.log(Level.SEVERE, sw.toString());
             }
             throw new SocketException();
         }
@@ -114,7 +123,7 @@ public class FxSocketClient extends GenericSocket
      * is null.
      */
     @Override
-    public void closeAdditionalSockets() {}
+    protected void closeAdditionalSockets() {}
     
     public FxSocketClient(SocketListener fxListener,
             String host, int port, int debugFlags) {
@@ -124,11 +133,14 @@ public class FxSocketClient extends GenericSocket
     }
 
     public FxSocketClient(SocketListener fxListener) {
-        this(fxListener, DEFAULT_HOST, DEFAULT_PORT, DEBUG_NONE);
+        this(fxListener, 
+                com.jtconnors.socket.Constants.instance().DEFAULT_HOST,
+                com.jtconnors.socket.Constants.instance().DEFAULT_PORT,
+                DebugFlags.instance().DEBUG_NONE);
     }
 
     public FxSocketClient(SocketListener fxListener,
             String host, int port) {
-        this(fxListener, host, port, DEBUG_NONE);
+        this(fxListener, host, port, DebugFlags.instance().DEBUG_NONE);
     }
 }

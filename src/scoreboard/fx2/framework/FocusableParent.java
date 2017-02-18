@@ -75,10 +75,11 @@ public class FocusableParent extends Parent {
         scaleOut.setToY(INCREASE_SCALE);
 
         setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent event) {
-                if ((Globals.lastFocused != null) &&
-                        (Globals.lastFocused != thisObject)) {
-                    Globals.lastFocused.unShowFocusHint();
+                if ((Globals.instance().lastFocused != null) &&
+                        (Globals.instance().lastFocused != thisObject)) {
+                    Globals.instance().lastFocused.unShowFocusHint();
                 }
                 showFocusHint();
             }
@@ -91,11 +92,13 @@ public class FocusableParent extends Parent {
         scaleIn.setToY(1.0f);
 
         setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent event) {
                 unShowFocusHint();
             }
         });
         setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent event) {
                 if (action != null) {
                     action.invoke();
@@ -137,7 +140,7 @@ public class FocusableParent extends Parent {
 
     public void showFocusHint() {
         focusHintDisplayed = true;
-        Globals.lastFocused = this;
+        Globals.instance().lastFocused = this;
         scaleOut.stop();
         scaleOut.setFromX(getScaleX());
         scaleOut.setFromY(getScaleY());

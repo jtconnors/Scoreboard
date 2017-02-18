@@ -42,8 +42,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 import scoreboard.common.Globals;
+import scoreboard.fx2.framework.FxConstants;
 
 public class Bulb extends Circle {
 
@@ -53,11 +53,12 @@ public class Bulb extends Circle {
 
     public Bulb() {
         this(DEFAULT_RADIUS, DEFAULT_RADIUS, DEFAULT_RADIUS,
-                DEFAULT_DIGIT_COLOR, Globals.unlitOpacity);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Globals.instance().unlitOpacity);
     }
 
     public Bulb (double radius, Color color) {
-        this(radius, radius, radius, color, Globals.unlitOpacity);
+        this(radius, radius, radius, color, Globals.instance().unlitOpacity);
     }
 
     public Bulb (double centerX, double centerY, double radius,
@@ -79,7 +80,7 @@ public class Bulb extends Circle {
         fillPattern = new RadialGradient(0, 0, .25f, .25f, .7f,
             true, CycleMethod.NO_CYCLE, stops);
         setFill(fillPattern);
-        setOpacity(isBulbLit() ? 1.0d : Globals.unlitOpacity);
+        setOpacity(isBulbLit() ? 1.0d : Globals.instance().unlitOpacity);
     }
 
     /**
@@ -123,7 +124,7 @@ public class Bulb extends Circle {
 
     public final void setBulbLit(boolean value) {
         bulbLitProperty().setValue(value);
-        setOpacity(value ? 1.0d : Globals.unlitOpacity);
+        setOpacity(value ? 1.0d : Globals.instance().unlitOpacity);
     }
 
     public final boolean isBulbLit() {
@@ -160,7 +161,7 @@ public class Bulb extends Circle {
     }
 
     public final double getUnlitOpacity() {
-        return unlitOpacity == null ? Globals.unlitOpacity :
+        return unlitOpacity == null ? Globals.instance().unlitOpacity :
                 (double)unlitOpacity.getValue();
     }
 

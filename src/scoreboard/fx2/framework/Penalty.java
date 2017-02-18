@@ -41,11 +41,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import static scoreboard.common.Constants.MAX_PENALTY_TIME;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.INTER_DIGIT_GAP_FRACTION;
+import scoreboard.common.Constants;
 import scoreboard.common.DigitsDisplayStates;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This abstract class defines the behavior of a Displayable object
@@ -154,7 +151,8 @@ public abstract class Penalty extends DisplayableWithDigits {
      * Visual cue via popup to let user know that the Penalty player
      * number cannot be set until a penalty time is specified.
      */
-    private String tipStr = "Penalty time must be\nset prior to player number";
+    private final String tipStr = 
+            "Penalty time must be\nset prior to player number";
     private final Tooltip tooltip = new Tooltip(tipStr);
     /*
      * Mechanism to block playerNumber when not in use.
@@ -172,6 +170,7 @@ public abstract class Penalty extends DisplayableWithDigits {
      * playerNumber Digits will be created by the TwoDigits createKeyPads()
      * method.
      */
+    @Override
     protected Group createKeyPads() {
         Group group = new Group();
         minutesDigit.keyPad = new KeyPad(
@@ -186,6 +185,7 @@ public abstract class Penalty extends DisplayableWithDigits {
         for (final Digit d : digitArr) {
             d.keyPad.setVisible(false);
             d.setAction(new FunctionPtr() {
+                @Override
                 public void invoke() {
                     d.displayKeyPad();
                 }
@@ -200,6 +200,7 @@ public abstract class Penalty extends DisplayableWithDigits {
      * the nodes that comprise the Penalty object.  This method is called
      * at initialization, and anytime a digitHeight resize event takes place.
      */
+    @Override
     protected void positionDigits() {
         getChildren().clear();
 
@@ -210,13 +211,13 @@ public abstract class Penalty extends DisplayableWithDigits {
         dash.setHeight(getDigitHeight() * DASH_HEIGHT_FRACTION);
         dash.setWidth(getDigitHeight() * DASH_WIDTH_FRACTION);
         dash.setLayoutX(playerNumber.getLayoutBounds().getWidth() +
-                (INTER_DIGIT_GAP_FRACTION * digitWidth));
+                (Constants.instance().INTER_DIGIT_GAP_FRACTION * digitWidth));
         dash.setLayoutY((getDigitHeight() - dash.getHeight()) / 2);
 
         minutesDigit.setDigitHeight(getDigitHeight());
         minutesDigit.setLayoutX(dash.getLayoutX() +
                 dash.getLayoutBounds().getWidth() +
-                (INTER_DIGIT_GAP_FRACTION * digitWidth));
+                (Constants.instance().INTER_DIGIT_GAP_FRACTION * digitWidth));
 
         double radius = getDigitHeight() / 18;
         bottomPartOfColon.setRadius(radius);
@@ -233,7 +234,8 @@ public abstract class Penalty extends DisplayableWithDigits {
 
         secondsDigit.setDigitHeight(getDigitHeight());
         secondsDigit.setLayoutX(tenSecondsDigit.getLayoutX() +
-                digitWidth + (INTER_DIGIT_GAP_FRACTION * digitWidth));
+                digitWidth + (Constants.instance().INTER_DIGIT_GAP_FRACTION *
+                digitWidth));
         /*
          * Mechanism to block input to player number when not in use
          */
@@ -258,12 +260,14 @@ public abstract class Penalty extends DisplayableWithDigits {
         componentHeight = boundingRect.getHeight();
     }
 
+    @Override
     protected void refreshOnOverallValueChange(int overallValue) {
         tenthsRemaining = overallValue * 10;
         setDigits();
         sendMessageToSocket(varName, String.valueOf(overallValue));
     }
 
+    @Override
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
         int key = keyCode.ordinal() - KeyCode.DIGIT0.ordinal();
         int updatedValue = getOverallValue();
@@ -283,10 +287,12 @@ public abstract class Penalty extends DisplayableWithDigits {
         return (validUpdate) ? updatedValue : getOverallValue();
     }
 
+    @Override
     protected int calculateKeyUpValue(Digit focusedDigit) {
         return getOverallValue() + focusedDigit.getIncrementValue();
     }
 
+    @Override
     protected int calculateKeyDownValue(Digit focusedDigit) {
         return getOverallValue() - focusedDigit.getIncrementValue();
     }
@@ -311,8 +317,7 @@ public abstract class Penalty extends DisplayableWithDigits {
             topPartOfColon.setVisible(false);
             bottomPartOfColon.setVisible(false);
         } else {
-            minutesDigit.setBlankIfZero(
-                    getOverallValue() < 60 ? true : false);
+            minutesDigit.setBlankIfZero((getOverallValue() < 60));
             tenSecondsDigit.setBlankIfZero(false);
             minutesDigit.setValue(getOverallValue() / 60);
             tenSecondsDigit.setValue((getOverallValue() % 60) / 10);
@@ -327,15 +332,18 @@ public abstract class Penalty extends DisplayableWithDigits {
      * Constructors
      */
     public Penalty(String varName, Timer timer) {
-        this(varName, timer, DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT);
+        this(varName, timer, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT);
     }
 
     public Penalty(String varName, Timer timer, Color color) {
-        this(varName, timer, color, DEFAULT_DIGIT_HEIGHT);
+        this(varName, timer, color,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT);
     }
 
     public Penalty(String varName, Timer timer, double digitHeight) {
-        this(varName, timer, DEFAULT_DIGIT_COLOR, digitHeight);
+        this(varName, timer, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                digitHeight);
     }
 
     public Penalty(String varName, Timer timer, Color color,
@@ -347,7 +355,7 @@ public abstract class Penalty extends DisplayableWithDigits {
         digitHeightProperty().setValue(digitHeight);
         overallValueProperty().setValue(0);
         this.minOverallValue = 0;
-        this.maxOverallValue = MAX_PENALTY_TIME;
+        this.maxOverallValue = Constants.instance().MAX_PENALTY_TIME;
     }
     
     /*
@@ -404,6 +412,7 @@ public abstract class Penalty extends DisplayableWithDigits {
          * constructor.
          */
         FunctionPtr handler = new FunctionPtr() {
+            @Override
             public void invoke() {
                 if (tenthsRemaining > 0) {
                     tenthsRemaining -= 1;
@@ -427,6 +436,7 @@ public abstract class Penalty extends DisplayableWithDigits {
          * When it transitions to/from zero, change the display state.
          */
         overallValueProperty().addListener(new InvalidationListener() {
+            @Override
             public void invalidated(Observable ov) {
                 // Transition from zero to non-zero
                 if (getPrevOverallValue() == 0 && getOverallValue() > 0) {
@@ -455,8 +465,8 @@ public abstract class Penalty extends DisplayableWithDigits {
                 return digit;
             }
         }
-        if (Globals.lastFocused == transitionKludge) {
-            return Globals.lastFocused;
+        if (Globals.instance().lastFocused == transitionKludge) {
+            return Globals.instance().lastFocused;
         }
         return null;
     }

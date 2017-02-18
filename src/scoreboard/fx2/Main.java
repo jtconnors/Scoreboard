@@ -28,7 +28,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package scoreboard.fx2;
 
 import javafx.application.Application;
@@ -37,7 +36,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import scoreboard.common.Constants;
 import scoreboard.fx2.impl.bulb.BulbHockeyScoreboard;
 import scoreboard.common.Globals;
 
@@ -46,23 +44,23 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         Group group = new Group();
-        BulbHockeyScoreboard bulbScoreboard =
-                new BulbHockeyScoreboard(711, 400, Globals.isSlave);
-        Globals.hockeyScoreboardRef = bulbScoreboard;
+        BulbHockeyScoreboard bulbScoreboard
+                = new BulbHockeyScoreboard(711, 400, Globals.instance().isSlave);
+        Globals.instance().hockeyScoreboardRef = bulbScoreboard;
         group.getChildren().add(bulbScoreboard);
         Scene scene = new Scene(group, group.getLayoutBounds().getWidth(),
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
-        stage.show();
-        stage.setOnCloseRequest((WindowEvent we) -> {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
     }
 
     public static void main(String[] args) {
-        Globals.parseArgs(args);
-        Globals.displaySocket = true;
+        Globals.instance().parseArgs(args);
+        Globals.instance().displaySocket = true;
 //        Globals.debugFlags = Constants.DEBUG_SEND;
         Application.launch(Main.class, args);
     }

@@ -35,22 +35,32 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import scoreboard.common.LayoutXOptions;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import scoreboard.common.Constants;
 import scoreboard.common.ScoreboardInputInterface;
-import static scoreboard.common.Constants.DEFAULT_CONFIG_FILE;
 import scoreboard.common.Globals;
+import scoreboard.common.Utils;
 
 /*
  * This base class is used by Scoreboard implementations to read scoreboard
  * configuration and/or update information in XML.
  */
 public abstract class XMLInput {
+    
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     protected DocumentBuilder documentBuilder;
     protected ScoreboardInputInterface scoreboardInputInterface;
@@ -104,41 +114,43 @@ public abstract class XMLInput {
     public void readConfigFile() {
         try {
             boolean configURLFound = false;
-            URL fileURL = null;
+            URL fileURL;
             InputStream in = null;
             /*
              * First try reading the user-defined configURL, that is, if it's
              * defined.
              */
-            if (Globals.configURL != null) {
-                System.out.println("Reading remote config file: " +
-                        Globals.configURL);
+            if (Globals.instance().configURL != null) {
+                LOGGER.log(Level.INFO, "Reading remote config file: {0}",
+                        Globals.instance().configURL);
                 /*
                  * If the configURL starts with '/', then treat this as
                  * a file inside the Scoreboard.jar archive
                  */
-                if (Globals.configURL.charAt(0) == '/') {
+                if (Globals.instance().configURL.charAt(0) == '/') {
                     try {
-                        fileURL = getClass().getResource(Globals.configURL);
+                        fileURL = getClass().getResource(
+                                Globals.instance().configURL);
                         in = fileURL.openStream();
                         configURLFound = true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("Not found in jar, Falling back to: "
-                                + DEFAULT_CONFIG_FILE);
+                    } catch (IOException e) {
+                        LOGGER.info(Utils.ExceptionStackTraceAsString(e));
+                        LOGGER.log(Level.INFO,
+                                "Not found in jar, Falling back to: {0}",
+                                Constants.instance().DEFAULT_CONFIG_FILE);
                     }
                 /*
                  * Otherwise treat this as a standard URL String
                  */
                 } else {
                     try {
-                        fileURL = new URL(Globals.configURL);
+                        fileURL = new URL(Globals.instance().configURL);
                         in = fileURL.openStream();
                         configURLFound = true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("Falling back to default: "
-                                + DEFAULT_CONFIG_FILE);
+                    } catch (IOException e) {
+                        LOGGER.info(Utils.ExceptionStackTraceAsString(e));
+                        LOGGER.log(Level.INFO, "Falling back to default: ",
+                                Constants.instance().DEFAULT_CONFIG_FILE);
                     }
                 }
             }
@@ -147,11 +159,14 @@ public abstract class XMLInput {
              * be found, use the default config.xml file found in the jar file.
              */
             if (!configURLFound) {
-                System.out.println("Reading default remote config file: "
-                        + DEFAULT_CONFIG_FILE);
-                fileURL = getClass().getResource(DEFAULT_CONFIG_FILE);
+                LOGGER.log(Level.INFO,
+                        "Reading default remote config file: {0}",
+                        Constants.instance().DEFAULT_CONFIG_FILE);
+                fileURL = getClass().getResource(
+                        Constants.instance().DEFAULT_CONFIG_FILE);
                 if (fileURL == null) {
-                    throw new FileNotFoundException(DEFAULT_CONFIG_FILE);
+                    throw new FileNotFoundException(
+                            Constants.instance().DEFAULT_CONFIG_FILE);
                 }
                 in = fileURL.openStream();
             }
@@ -166,8 +181,8 @@ public abstract class XMLInput {
                 readConfigNode(nodeLst.item(s));
             }
             scoreboardInputInterface.resolveXlocations();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            LOGGER.severe(Utils.ExceptionStackTraceAsString(e));
             System.exit(1);
         }
     }
@@ -180,8 +195,8 @@ public abstract class XMLInput {
         try {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         documentBuilder = dbf.newDocumentBuilder();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            LOGGER.severe(Utils.ExceptionStackTraceAsString(e));
         }
     }
 
@@ -204,8 +219,8 @@ public abstract class XMLInput {
             doc.getDocumentElement().normalize();
             NodeList nodeLst = doc.getElementsByTagName("update");
             readUpdateNode(nodeLst.item(0));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | SAXException e) {
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
         }
     }
 }

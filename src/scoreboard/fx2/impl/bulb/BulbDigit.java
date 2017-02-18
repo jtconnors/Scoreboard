@@ -34,16 +34,12 @@ package scoreboard.fx2.impl.bulb;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import scoreboard.common.Constants;
 import scoreboard.fx2.framework.Digit;
 import scoreboard.common.Globals;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.MIN_DIGIT_VALUE;
-import static scoreboard.common.Constants.MAX_DIGIT_VALUE;
-import static scoreboard.common.Constants.BLANK_DIGIT;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import scoreboard.fx2.framework.FxConstants;
 
 public class BulbDigit extends Digit {
-
     /*
      * A Digit is comprised of 27 Bulbs.  The individual
      * Bulbs can be addressed as follows:
@@ -129,21 +125,23 @@ public class BulbDigit extends Digit {
     /*
      * Abstract methods from Digit that must be defined.
      */
+    @Override
     protected void refreshOnColorChange(Color color) {
         for (Bulb bulb:bulbs) {
            bulb.setColor(color);
         }
     }
 
+    @Override
     protected void refreshOnDigitHeightChange(double digitHeight) {
         getChildren().clear();
         init();
     }
 
+    @Override
     protected void refreshOnValueChange(int value) {
         for (int i=0; i<NBULBS; i++) {
-           bulbs[i].setBulbLit(
-               (digitBitMask[value] & bulbBit[i]) != 0 ? true : false);
+           bulbs[i].setBulbLit(((digitBitMask[value] & bulbBit[i]) != 0));
         }
     }
 
@@ -164,12 +162,16 @@ public class BulbDigit extends Digit {
      * Constructors and helpers
      */
     public BulbDigit() {
-        this(DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public BulbDigit(Color digitColor, double digitHeight) {
-        this(digitColor, digitHeight, 0, MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(digitColor, digitHeight, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public BulbDigit(Color digitColor, double digitHeight, int value,
@@ -188,15 +190,15 @@ public class BulbDigit extends Digit {
     private Group createBulbs() {
         int displayValue = getValue();
         if ((displayValue == 0) && (isBlankIfZero())) {
-            displayValue = BLANK_DIGIT;
+            displayValue = Constants.instance().BLANK_DIGIT;
         }
         for (int i=0; i<NBULBS; i++) {
            double centerX = bulbOffset[i][0] * bulbRadius * 2 + bulbRadius;
            double centerY = bulbOffset[i][1] * bulbRadius * 2 + bulbRadius;
            bulbs[i] = new Bulb(centerX, centerY, bulbRadius,
-                   getColor(), Globals.unlitOpacity);
+                   getColor(), Globals.instance().unlitOpacity);
            bulbs[i].setBulbLit(
-               (digitBitMask[displayValue] & bulbBit[i]) != 0 ? true : false);
+                   ((digitBitMask[displayValue] & bulbBit[i]) != 0));
         }
         Group group = new Group();
         group.getChildren().addAll(bulbs);

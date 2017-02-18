@@ -40,11 +40,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.paint.Color;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.BLANK_DIGIT;
-import static scoreboard.common.Constants.MIN_DIGIT_VALUE;
-import static scoreboard.common.Constants.MAX_DIGIT_VALUE;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import scoreboard.common.Constants;
 
 /*
  * This abstract class defines the common behavior of a scoreboard digit.
@@ -132,7 +128,7 @@ public abstract class Digit extends FocusableParent {
     public final void setValue(int value) {
         valueProperty().setValue(value);
         if ((value == 0) && (isBlankIfZero())) {
-            refreshOnValueChange(BLANK_DIGIT);
+            refreshOnValueChange(Constants.instance().BLANK_DIGIT);
         } else {
             refreshOnValueChange(value);
         }
@@ -171,7 +167,7 @@ public abstract class Digit extends FocusableParent {
         blankIfZeroProperty().setValue(value);
         if (getValue() == 0) {
             if (value) {
-                refreshOnValueChange(BLANK_DIGIT);
+                refreshOnValueChange(Constants.instance().BLANK_DIGIT);
             } else {
                 refreshOnValueChange(0);
             }
@@ -281,31 +277,36 @@ public abstract class Digit extends FocusableParent {
      * from [0-9]. If you want to further restrict the range, set
      * minValue and maxValue in the Digit constructor.
      */
-    protected int minValue = MIN_DIGIT_VALUE;
+    protected int minValue = Constants.instance().MIN_DIGIT_VALUE;
     public int getMinValue() { return minValue; }
-    protected int maxValue = MAX_DIGIT_VALUE;
+    protected int maxValue = Constants.instance().MAX_DIGIT_VALUE;
     public int getMaxValue() { return maxValue; }
 
     /*
      * Constructors
      */
     public Digit() {
-        this(DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE, 
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public Digit(Color color) {
-        this(color, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(color, Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public Digit(double digitHeight) {
-        this(DEFAULT_DIGIT_COLOR, digitHeight, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(FxConstants.instance().DEFAULT_DIGIT_COLOR, digitHeight, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public Digit(Color color, double digitHeight) {
-        this(color, digitHeight, 0, MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(color, digitHeight, 0, Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public Digit(Color color, double digitHeight, int value,
@@ -315,9 +316,9 @@ public abstract class Digit extends FocusableParent {
         digitHeightProperty().setValue(digitHeight);
         blankIfZeroProperty().setValue(false);
         valueProperty().setValue(value);
-        this.minValue = minValue >= MIN_DIGIT_VALUE
-                ? minValue : MIN_DIGIT_VALUE;
-        this.maxValue = maxValue <= MAX_DIGIT_VALUE
-                ? maxValue : MAX_DIGIT_VALUE;
+        this.minValue = minValue >= Constants.instance().MIN_DIGIT_VALUE
+                ? minValue : Constants.instance().MIN_DIGIT_VALUE;
+        this.maxValue = maxValue <= Constants.instance().MAX_DIGIT_VALUE
+                ? maxValue : Constants.instance().MAX_DIGIT_VALUE;
     }
 }

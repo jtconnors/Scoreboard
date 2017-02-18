@@ -47,26 +47,26 @@ public class MainMulticastRemote extends Application {
     public void start(Stage stage) {
         Group group = new Group();
         BulbHockeyScoreboard bulbScoreboard =
-                new BulbHockeyScoreboard(711, 400, Globals.isSlave);
+                new BulbHockeyScoreboard(711, 400, Globals.instance().isSlave);
 //                new BulbHockeyScoreboard(1280, 700, Globals.isSlave);
-        Globals.hockeyScoreboardRef = bulbScoreboard;
+        Globals.instance().hockeyScoreboardRef = bulbScoreboard;
         group.getChildren().add(bulbScoreboard);
         Scene scene = new Scene(group, group.getLayoutBounds().getWidth(),
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
-        stage.show();
-        stage.setOnCloseRequest((WindowEvent we) -> {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
     }
 
     public static void main(String[] args) {
-        Globals.isSlave = true;
-        Globals.useIPSocket = false;
-        Globals.displaySocket = true;
+        Globals.instance().isSlave = true;
+        Globals.instance().useIPSocket = false;
+        Globals.instance().displaySocket = true;
         
-        Globals.parseArgs(args);
+        Globals.instance().parseArgs(args);
         
         Application.launch(MainMulticastRemote.class, args);
     }

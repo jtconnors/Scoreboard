@@ -31,7 +31,7 @@
 
 package scoreboard.fx2.networking;
 
-import scoreboard.common.networking.*;
+import com.jtconnors.socket.MultipleSocketWriter;
 import scoreboard.common.Globals;
 
 public class FxMultipleSocketWriter extends MultipleSocketWriter {
@@ -41,7 +41,7 @@ public class FxMultipleSocketWriter extends MultipleSocketWriter {
      * In JavaFX 2.0, this method must be run on the
      * main thread.  This is accomplished by the Platform.runLater() call.
      * Failure to do so *will* result in strange errors and exceptions.
-     * @param line Line of text read from the socket.
+     * @param msg Line of text read from the socket.
      */
     @Override
     public void onMessage(String msg) {
@@ -51,19 +51,18 @@ public class FxMultipleSocketWriter extends MultipleSocketWriter {
     /**
      * Called whenever the open/closed status of the Socket
      * changes.  In JavaFX 2.0, this method must be run on the
-     * main thread.  This is accomplished by the Platform.runLater() call.
+     * main thread.  This is accomplished by the Platform.runLater() call
+     * which utilizes the {@code Runnable} interface, simplified by the
+     * lambda expression used in this method.
      * Failure to do so *will* result in strange errors and exceptions.
      * @param isClosed true if the socket is closed
      */
     @Override
     public void onClosedStatus(boolean isClosed) {
-        javafx.application.Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                int numConnections = updateListeners.size();
-                Globals.socketClosed = numConnections <= 0 ? true : false;
-                Globals.hockeyScoreboardRef.updateStatusRow(numConnections);
-            }
+        javafx.application.Platform.runLater(() -> {
+            Globals.instance().socketClosed = getNumberOfListeners() <= 0;
+            Globals.instance()
+                    .hockeyScoreboardRef.updateStatusRow(getNumberOfListeners());
         });
     }
     public FxMultipleSocketWriter () {

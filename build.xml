@@ -73,7 +73,8 @@
     -->
 
     <!-- Zip up dist directory after build -->
-    <target name="-post-jar">
+    <!--
+    <target name="-post-jar" depends="-do-zip,-do-modular-jar,-do-jlink">
         <copy todir="${dist.dir}">
             <fileset dir="scripts" includes="**"/>
         </copy>
@@ -84,21 +85,56 @@
             <arg value="${dist.dir}"/>
         </exec>
     </target>
+    -->
+    <target name="-post-jar" depends="do-modular-jar,do-jlink,do-zip">
+    </target>
+    
+    <target name="check-dist-jar" depends="-init-project">
+        <available property="dist.jar.exsists" file="${dist.jar}"/>
+    </target>
 
-    <!-- Custom Code Timestamping using Ant's signjar instead of NetBeans -->
-    <target name="sign-jars">
-        <echo message="Using custom code for signing and timestamping via build.xml..."/>
-        <signjar
-            verbose="true"
-            alias="${jnlp.signjar.alias}"
-            storepass="${jnlp.signjar.storepass}"
-            keystore="${jnlp.signjar.keystore}"
-            keypass="${jnlp.signjar.keypass}"
-            tsaurl="${jnlp.signing.tsaurl}">
-            <path>
-                <fileset dir="dist" includes="*.jar" />
-            </path>
-        </signjar>
+    <target name="do-zip" depends="check-dist-jar" if="${dist.jar.exsists}">
+        <copy todir="${dist.dir}">
+            <fileset dir="scripts" includes="**"/>
+        </copy>
+        <exec executable="${zip.exe}">
+            <arg value="a"/>
+            <arg value="-tzip"/>
+            <arg value="${dist.dir}.zip"/>
+            <arg value="${dist.dir}"/>
+        </exec>    
+    </target>
+    
+    <target name="do-modular-jar" depends="check-dist-jar" if="${dist.jar.exsists}">
+        <echo message="Updating ${dist.jar} to be a modular jar."/>
+        <echo message="Executing: ${modular.jar.command} ${modular.jar.args.concatenated}"/>
+        <exec executable="${modular.jar.command}">
+            <arg value="${modular.jar.arg1}"/>
+            <arg value="${modular.jar.arg2}"/>
+            <arg value="${modular.jar.arg3}"/>
+            <arg value="${modular.jar.arg4}"/>
+            <arg value="${modular.jar.arg5}"/>
+            <arg value="${modular.jar.arg6}"/>
+            <arg value="${modular.jar.arg7}"/>
+            <arg value="${modular.jar.arg8}"/>
+            <arg value="${modular.jar.arg9}"/>
+            <arg value="${modular.jar.arg10}"/>
+            <arg value="${modular.jar.arg11}"/>
+        </exec>
+    </target>
+    
+    <target name="do-jlink" depends="check-dist-jar" if="${dist.jar.exsists}">
+        <echo message="Creating jlink image in ${jlink.image.dir}/."/>
+        <echo message="Executing: ${jlink.command} ${jlink.args.concatenated}"/>
+        <exec executable="${jlink.command}">
+            <arg value="${jlink.arg1}"/>
+            <arg value="${jlink.arg2}"/>
+            <arg value="${jlink.arg3}"/>
+            <arg value="${jlink.arg4}"/>
+            <arg value="${jlink.arg5}"/>
+            <arg value="${jlink.arg6}"/>
+            <arg value="${jlink.arg7}"/>
+        </exec>
     </target>
 
 </project>

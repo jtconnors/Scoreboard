@@ -52,25 +52,25 @@ public class MainRemoteFullScreen extends Application {
         BulbHockeyScoreboard bulbScoreboard = new BulbHockeyScoreboard(
                 Screen.getPrimary().getBounds().getWidth(),
                 Screen.getPrimary().getBounds().getHeight(),
-                Globals.isSlave);
-        Globals.hockeyScoreboardRef = bulbScoreboard;
+                Globals.instance().isSlave);
+        Globals.instance().hockeyScoreboardRef = bulbScoreboard;
         group.getChildren().add(bulbScoreboard);
         Scene scene = new Scene(group, group.getLayoutBounds().getWidth(),
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
-        stage.show();
-        stage.setOnCloseRequest((WindowEvent we) -> {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
     }
 
     public static void main(String[] args) {
-        Globals.isSlave = true;
-        Globals.useIPSocket = true;
-        Globals.displaySocket = true;
+        Globals.instance().isSlave = true;
+        Globals.instance().useIPSocket = true;
+        Globals.instance().displaySocket = true;
         
-        Globals.parseArgs(args);
+        Globals.instance().parseArgs(args);
         
         Application.launch(MainRemoteFullScreen.class, args);
     }

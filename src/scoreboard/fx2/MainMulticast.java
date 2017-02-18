@@ -39,6 +39,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import scoreboard.fx2.impl.bulb.BulbHockeyScoreboard;
 import scoreboard.common.Globals;
+import scoreboard.fx2.framework.FxGlobals;
 
 public class MainMulticast extends Application {
 
@@ -46,25 +47,25 @@ public class MainMulticast extends Application {
     public void start(Stage stage) {
         Group group = new Group();
         BulbHockeyScoreboard bulbScoreboard =
-                new BulbHockeyScoreboard(711, 400, Globals.isSlave);
-        Globals.hockeyScoreboardRef = bulbScoreboard;
+                new BulbHockeyScoreboard(711, 400, Globals.instance().isSlave);
+        Globals.instance().hockeyScoreboardRef = bulbScoreboard;
         group.getChildren().add(bulbScoreboard);
         Scene scene = new Scene(group, group.getLayoutBounds().getWidth(),
                 group.getLayoutBounds().getHeight());
         stage.setScene(scene);
-        stage.show();
-        stage.setOnCloseRequest((WindowEvent we) -> {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
     }
 
     public static void main(String[] args) {
-        Globals.isSlave = false;
-        Globals.useIPSocket = false;
-        Globals.displaySocket = true;
+        Globals.instance().isSlave = false;
+        Globals.instance().useIPSocket = false;
+        Globals.instance().displaySocket = true;
         
-        Globals.parseArgs(args);
+        Globals.instance().parseArgs(args);
         
         Application.launch(MainMulticast.class, args);
     }

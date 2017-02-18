@@ -110,6 +110,7 @@ public class KeyPad extends Parent {
             text.setDisable(true);
 
             boundingRect.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                @Override
                 public void handle(MouseEvent me) {
                     if (lastHighlightedNumberNode != numberNodeRef) {
                         lastHighlightedNumberNode.unShowFocusHint();
@@ -119,6 +120,7 @@ public class KeyPad extends Parent {
             });
 
             setOnMousePressed(new EventHandler<MouseEvent>() {
+                @Override
                 public void handle(MouseEvent me) {
                     doSelected((NumberNode)me.getSource());
                 }
@@ -170,8 +172,7 @@ public class KeyPad extends Parent {
                 if (!nextNode.isDisabled()) {
                     lastEnabledNode = nextNode;
                 }
-                finished = (nextNode == lastNode || !nextNode.isDisabled())
-                        ? true : false;
+                finished = (nextNode == lastNode || !nextNode.isDisabled());
             } while (!finished);
             return lastEnabledNode;
         }
@@ -270,6 +271,7 @@ public class KeyPad extends Parent {
 //        rect.setBlocksMouse(true);
 
         setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
             public void handle(KeyEvent ke) {
                 processKeyEvent(ke.getCode());
             }
@@ -289,6 +291,7 @@ public class KeyPad extends Parent {
                 keyPadGroup.getLayoutBounds().getHeight()) / 2);
 
         rect.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
             public void handle(MouseEvent ke) {
                 setVisible(false);
             }
@@ -406,7 +409,7 @@ public class KeyPad extends Parent {
         if (validKey) {
             lastHighlightedNumberNode.unShowFocusHint();
             ((NumberNode)highlight).showFocusHint();
-            Globals.keyEventAlreadyProcessed = true;
+            Globals.instance().keyEventAlreadyProcessed = true;
         }
         if (selected) {
             if ((key == KeyCode.ENTER) ||

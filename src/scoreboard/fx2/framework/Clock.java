@@ -36,11 +36,7 @@ import javafx.scene.Group;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import static scoreboard.common.Constants.MAX_CLOCK_TIME;
-import static scoreboard.common.Constants.BLANK_DIGIT;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.INTER_DIGIT_GAP_FRACTION;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import scoreboard.common.Constants;
 
 /*
  * This abstract class defines the behavior of a scoreboard clock consisting
@@ -119,6 +115,7 @@ public abstract class Clock extends DisplayableWithDigits {
     /*
      * Creates the KeyPads associated with each Clock Digit.
      */
+    @Override
     protected Group createKeyPads() {
         Group group = new Group();
         tenMinutesDigit.normalKeyPad = new KeyPad(
@@ -138,6 +135,7 @@ public abstract class Clock extends DisplayableWithDigits {
         for (final Digit d : digitArr) {
             d.keyPad.setVisible(false);
             d.setAction(new FunctionPtr() {
+                @Override
                 public void invoke() {
                     d.displayKeyPad();
                 }
@@ -165,6 +163,7 @@ public abstract class Clock extends DisplayableWithDigits {
      * the nodes that comprise the Clock object.  This method is called
      * at initialization, and anytime a digitHeight resize event takes place.
      */
+    @Override
     protected void positionDigits() {
         getChildren().clear();
         tenMinutesDigit.setDigitHeight(getDigitHeight());
@@ -172,7 +171,7 @@ public abstract class Clock extends DisplayableWithDigits {
 
         minutesDigit.setDigitHeight(getDigitHeight());
         minutesDigit.setLayoutX(digitWidth +
-                (INTER_DIGIT_GAP_FRACTION * digitWidth));
+                (Constants.instance().INTER_DIGIT_GAP_FRACTION * digitWidth));
         
         double radius = getDigitHeight() / 18;
         bottomPartOfColon.setRadius(radius);
@@ -192,7 +191,8 @@ public abstract class Clock extends DisplayableWithDigits {
 
         secondsDigit.setDigitHeight(getDigitHeight());
         secondsDigit.setLayoutX(tenSecondsDigit.getLayoutX() +
-                digitWidth + (INTER_DIGIT_GAP_FRACTION * digitWidth));
+                digitWidth + (Constants.instance().INTER_DIGIT_GAP_FRACTION *
+                digitWidth));
 
         getChildren().addAll(tenMinutesDigit, minutesDigit,
                 tenSecondsDigit, secondsDigit,
@@ -207,6 +207,7 @@ public abstract class Clock extends DisplayableWithDigits {
         componentHeight = boundingRect.getHeight();
     }
 
+    @Override
     protected void refreshOnOverallValueChange(int overallValue) {
         setDigits();
         sendMessageToSocket(varName, String.valueOf(overallValue));
@@ -219,6 +220,7 @@ public abstract class Clock extends DisplayableWithDigits {
      * take into account when a user wants to adjust the time with the
      * keyboard number (0-9) keys.  That is encapsulated here.
      */
+    @Override
     public int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
         int key = keyCode.ordinal() - KeyCode.DIGIT0.ordinal();
         if (key < 0 || key > 9) {
@@ -290,6 +292,7 @@ public abstract class Clock extends DisplayableWithDigits {
      * take into account when a user wants to adjust the time with the
      * keyboard up arrow keys.  That craziness is encapsulated here.
      */
+    @Override
     protected int calculateKeyUpValue(Digit focusedDigit) {
         int increment = focusedDigit.getIncrementValue();
         int alternateIncrement = focusedDigit.getAlternateIncrementValue();
@@ -309,13 +312,13 @@ public abstract class Clock extends DisplayableWithDigits {
             ((getOverallValue() + increment) < 600)) {
             if (focusedDigit == secondsDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = minutesDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = minutesDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return getOverallValue() + increment;
             } else if (focusedDigit == tenSecondsDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = tenMinutesDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = tenMinutesDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return getOverallValue() + increment;
             }
         }
@@ -346,20 +349,20 @@ public abstract class Clock extends DisplayableWithDigits {
             ((getOverallValue() + alternateIncrement) >= 600)) {
             if (focusedDigit == tenMinutesDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = tenSecondsDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = tenSecondsDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return getOverallValue() + alternateIncrement;
             }
             if (focusedDigit == minutesDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = secondsDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = secondsDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return getOverallValue() + alternateIncrement;
             }
             if (focusedDigit == tenSecondsDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = secondsDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = secondsDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return getOverallValue() + alternateIncrement;
             }
         }
@@ -372,6 +375,7 @@ public abstract class Clock extends DisplayableWithDigits {
      * cases to account for when a user wants to adjust the time with the
      * keyboard down arrow key.
      */
+    @Override
     protected int calculateKeyDownValue(Digit focusedDigit) {
         int increment = focusedDigit.getIncrementValue();
         int alternateIncrement = focusedDigit.getAlternateIncrementValue();
@@ -394,12 +398,12 @@ public abstract class Clock extends DisplayableWithDigits {
             if ((focusedDigit == tenSecondsDigit) ||
                 (focusedDigit == minutesDigit)) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = tenSecondsDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = tenSecondsDigit;
+                Globals.instance().lastFocused.showFocusHint();
             } else if (focusedDigit == tenMinutesDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = tenSecondsDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = tenSecondsDigit;
+                Globals.instance().lastFocused.showFocusHint();
             }
             return 0;
         }
@@ -429,19 +433,19 @@ public abstract class Clock extends DisplayableWithDigits {
             ((getOverallValue() - increment) < 600)) {
             if (focusedDigit == secondsDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = tenSecondsDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = tenSecondsDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return 599;
             } else if (focusedDigit == tenSecondsDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = minutesDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = minutesDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return ((getOverallValue() - increment) -
                         (getOverallValue() - increment) % 10);
             } else if (focusedDigit == minutesDigit) {
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = minutesDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = minutesDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return ((getOverallValue() - increment) -
                         (getOverallValue() - increment) % 10);
             } else if (focusedDigit == tenMinutesDigit) {
@@ -449,8 +453,8 @@ public abstract class Clock extends DisplayableWithDigits {
                     return -1;
                 }
                 focusedDigit.unShowFocusHint();
-                Globals.lastFocused = minutesDigit;
-                Globals.lastFocused.showFocusHint();
+                Globals.instance().lastFocused = minutesDigit;
+                Globals.instance().lastFocused.showFocusHint();
                 return ((getOverallValue() - increment) -
                         (getOverallValue() - increment) % 10);
             }
@@ -475,10 +479,8 @@ public abstract class Clock extends DisplayableWithDigits {
         if (getOverallValue() >= 600) {
             tenMinutesDigit.setBlankIfZero(true);
             tenMinutesDigit.setValue(getOverallValue() / 6000);
-            minutesDigit.setBlankIfZero(
-                    getOverallValue() < 600 ? true : false);
-            tenSecondsDigit.setBlankIfZero(
-                    getOverallValue() < 100 ? true : false);
+            minutesDigit.setBlankIfZero((getOverallValue() < 600));
+            tenSecondsDigit.setBlankIfZero((getOverallValue() < 100));
             minutesDigit.setValue((getOverallValue() % 6000) / 600);
             tenSecondsDigit.setValue((getOverallValue() % 600) / 100);
             secondsDigit.setBlankIfZero(false);
@@ -502,14 +504,13 @@ public abstract class Clock extends DisplayableWithDigits {
          *         tenSecondsDigit
          */
         else if ((getOverallValue() < 600) && (getOverallValue() > 0)) {
-            tenMinutesDigit.setBlankIfZero(
-                    getOverallValue() < 1000 ? true : false);
+            tenMinutesDigit.setBlankIfZero((getOverallValue() < 1000));
             tenMinutesDigit.setValue(getOverallValue() / 100);
             minutesDigit.setBlankIfZero(false);
             minutesDigit.setValue((getOverallValue() % 100) / 10);
             tenSecondsDigit.setBlankIfZero(false);
             tenSecondsDigit.setValue(getOverallValue() % 10);
-            secondsDigit.setValue(BLANK_DIGIT);
+            secondsDigit.setValue(Constants.instance().BLANK_DIGIT);
             decimalPoint.setVisible(true);
             topPartOfColon.setVisible(false);
             bottomPartOfColon.setVisible(false);
@@ -542,18 +543,20 @@ public abstract class Clock extends DisplayableWithDigits {
     public Clock(String varName, ScoreboardWithClock scoreboardWithClock,
             Timer timer) {
         this(varName, scoreboardWithClock, timer,
-                DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT);
     }
 
     public Clock(String varName, ScoreboardWithClock scoreboardWithClock, 
             Timer timer, Color color) {
-        this(varName, scoreboardWithClock, timer, color, DEFAULT_DIGIT_HEIGHT);
+        this(varName, scoreboardWithClock, timer, color,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT);
     }
 
     public Clock(String varName, ScoreboardWithClock scoreboardWithClock,
             Timer timer, double digitHeight) {
         this(varName, scoreboardWithClock, timer,
-                DEFAULT_DIGIT_COLOR, digitHeight);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, digitHeight);
     }
 
     public Clock(String varName, ScoreboardWithClock scoreboardWithClock,
@@ -566,7 +569,7 @@ public abstract class Clock extends DisplayableWithDigits {
         digitHeightProperty().setValue(digitHeight);
         overallValueProperty().setValue(0);
         this.minOverallValue = 0;
-        this.maxOverallValue = MAX_CLOCK_TIME;
+        this.maxOverallValue = Constants.instance().MAX_CLOCK_TIME;
     }
 
     /*
@@ -618,12 +621,14 @@ public abstract class Clock extends DisplayableWithDigits {
          * constructor.
          */
         FunctionPtr handler = new FunctionPtr() {
+            @Override
             public void invoke() {
                 if (getOverallValue() > 0) {
                     setOverallValue(getOverallValue()-1);
                 } else {
                     getTimer().stop();
-                    if (scoreboardWithClock != null) {
+                    if (Globals.instance().useHorn && 
+                            scoreboardWithClock != null) {
                         scoreboardWithClock.soundHorn();
                     }
                 }

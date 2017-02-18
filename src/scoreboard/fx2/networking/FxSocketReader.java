@@ -31,16 +31,19 @@
 
 package scoreboard.fx2.networking;
 
-import scoreboard.common.networking.SocketListener;
+import com.jtconnors.socket.SocketListener;
+import com.jtconnors.socket.DebugFlags;
+import com.jtconnors.socket.Constants;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import scoreboard.fx2.framework.hockey.HockeyScoreboard;
-import static scoreboard.common.Constants.DEFAULT_HOST;
-import static scoreboard.common.Constants.DEFAULT_PORT;
-import static scoreboard.common.Constants.DEBUG_STATUS;
-import static scoreboard.common.Constants.DEBUG_ALL;
-import static scoreboard.common.Constants.DEBUG_NONE;
+
 import scoreboard.common.Globals;
 
 public class FxSocketReader {
+    
+    private static final Logger LOGGER = Logger.getLogger(
+            FxSocketReader.class.getName());
 
     private HockeyScoreboard hockeyScoreboard;
     private FxSocketClient fxSocketClient;
@@ -66,13 +69,13 @@ public class FxSocketReader {
          */
         @Override
         public void onClosedStatus(boolean isClosed) {
-            if ((debugFlags & DEBUG_STATUS) != 0) {
-                if (isClosed != Globals.socketClosed) {
-                    System.out.println("Socket status changed: isClosed = "
-                        + isClosed);    
+            if ((debugFlags & DebugFlags.instance().DEBUG_STATUS) != 0) {
+                if (isClosed != Globals.instance().socketClosed) {
+                    LOGGER.log(Level.INFO,
+                            "Socket status changed: isClosed = {0}", isClosed);  
                 }
             }
-            Globals.socketClosed = isClosed;
+            Globals.instance().socketClosed = isClosed;
             if (hockeyScoreboard != null) {
                 hockeyScoreboard.updateStatusRow(isClosed ? 0 : 1);   
             }
@@ -80,7 +83,7 @@ public class FxSocketReader {
                 try {
                     Thread.sleep(3000);
                     connect();
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                 }
             }
         }
@@ -94,12 +97,14 @@ public class FxSocketReader {
     }
 
     public FxSocketReader(HockeyScoreboard hockeyScoreboard) {
-        this(hockeyScoreboard, DEFAULT_HOST, DEFAULT_PORT, DEBUG_NONE);
+        this(hockeyScoreboard, Constants.instance().DEFAULT_HOST,
+                Constants.instance().DEFAULT_PORT,
+                DebugFlags.instance().DEBUG_NONE);
     }
 
     public FxSocketReader(HockeyScoreboard hockeyScoreboard,
             String host, int port) {
-        this(hockeyScoreboard, host, port, DEBUG_NONE);
+        this(hockeyScoreboard, host, port, DebugFlags.instance().DEBUG_NONE);
     }
 
     public FxSocketReader(HockeyScoreboard hockeyScoreboard,
@@ -123,8 +128,9 @@ public class FxSocketReader {
     /**
      * Get the set of enabled debug flags as defined by the bit masks in
      * scoreboard.common.Constants
+     * @return 
      */
-    public int getDegugFlags() {
+    public int getDebugFlags() {
         return debugFlags;
     }
 

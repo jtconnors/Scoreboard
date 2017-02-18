@@ -31,12 +31,9 @@
 
 package scoreboard.fx2.impl.led;
 
+import scoreboard.common.Constants;
+import scoreboard.fx2.framework.FxConstants;
 import scoreboard.fx2.framework.hockey.HockeyScoreboard;
-import static scoreboard.common.Constants.DEFAULT_SCOREBOARD_WIDTH;
-import static scoreboard.common.Constants.DEFAULT_SCOREBOARD_HEIGHT;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
-import static scoreboard.fx2.framework.FxConstants.
-        DEFAULT_SECONDARY_COLOR;
 
 /*
  * This class extends the abstract Scoreboard class and must be written in
@@ -56,7 +53,8 @@ import static scoreboard.fx2.framework.FxConstants.
 public class LEDHockeyScoreboard extends HockeyScoreboard {
 
     public LEDHockeyScoreboard() {
-        this(DEFAULT_SCOREBOARD_WIDTH, DEFAULT_SCOREBOARD_HEIGHT, false);
+        this(Constants.instance().DEFAULT_SCOREBOARD_WIDTH,
+                Constants.instance().DEFAULT_SCOREBOARD_HEIGHT, false);
     }
 
     public LEDHockeyScoreboard(double width, double height) {
@@ -70,26 +68,29 @@ public class LEDHockeyScoreboard extends HockeyScoreboard {
          * The following variables are implementation specific and must
          * be changed for each implementation of this class.
          */
-        clock = new LEDClock("clock", this, clockTimer, DEFAULT_DIGIT_COLOR,
-                largeDigitSize);
-        homeScore = new LEDTwoDigit("homeScore", DEFAULT_SECONDARY_COLOR,
+        clock = new LEDClock("clock", this, clockTimer,
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, largeDigitSize);
+        homeScore = new LEDTwoDigit("homeScore",
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
                 mediumDigitSize);
-        guestScore = new LEDTwoDigit("guestScore", DEFAULT_SECONDARY_COLOR,
+        guestScore = new LEDTwoDigit("guestScore",
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
                 mediumDigitSize);
-        period = new LEDSingleDigit("period", DEFAULT_SECONDARY_COLOR,
+        period = new LEDSingleDigit("period", 
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR,
                 smallDigitSize, 1, 1, 4);
         homeShotsOnGoal = new LEDTwoDigit("homeShotsOnGoal", 
-                DEFAULT_SECONDARY_COLOR, smallDigitSize);
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR, smallDigitSize);
         guestShotsOnGoal = new LEDTwoDigit("guestShotsOnGoal",
-                DEFAULT_SECONDARY_COLOR, smallDigitSize);
+                FxConstants.instance().DEFAULT_SECONDARY_COLOR, smallDigitSize);
         homePenalty1 = new LEDPenalty("homePenalty1", homePenalty1Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         guestPenalty1 = new LEDPenalty("guestPenalty1", guestPenalty1Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         homePenalty2 = new LEDPenalty("homePenalty2", homePenalty2Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         guestPenalty2 = new LEDPenalty("guestPenalty2", guestPenalty2Timer,
-                DEFAULT_DIGIT_COLOR, mediumDigitSize);
+                FxConstants.instance().DEFAULT_DIGIT_COLOR, mediumDigitSize);
         /*
          * End implementation specific section.
          */

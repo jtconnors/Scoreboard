@@ -39,15 +39,14 @@ import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import static scoreboard.common.Constants.SEGMENT_EDGE_TO_DIGIT_HEIGHT_RATIO;
-import static scoreboard.common.Constants.SEGMENT_LENGTH_TO_DIGIT_HEIGHT_RATIO;
+import scoreboard.common.Constants;
 import scoreboard.common.Globals;
 
 public class Segment extends Polygon {
     
     private static final double LENGTH_TO_WIDTH_RATIO =
-        (SEGMENT_EDGE_TO_DIGIT_HEIGHT_RATIO /
-        SEGMENT_LENGTH_TO_DIGIT_HEIGHT_RATIO) * 2d;
+        (Constants.instance().SEGMENT_EDGE_TO_DIGIT_HEIGHT_RATIO /
+        Constants.instance().SEGMENT_LENGTH_TO_DIGIT_HEIGHT_RATIO) * 2d;
 
     private boolean vertical;
     public boolean isVertical() { return vertical; }
@@ -62,7 +61,7 @@ public class Segment extends Polygon {
     private double gap;
   
     public Segment (double length, boolean vertical, Color color) {
-        this(length, vertical, color, Globals.unlitOpacity);
+        this(length, vertical, color, Globals.instance().unlitOpacity);
     }
 
     public Segment (double length, boolean vertical, Color color,
@@ -107,7 +106,7 @@ public class Segment extends Polygon {
             });    
         }
         setFill(getColor());
-        setOpacity(isSegmentLit() ? 1.0d : Globals.unlitOpacity);
+        setOpacity(isSegmentLit() ? 1.0d : Globals.instance().unlitOpacity);
     }
 
     /**
@@ -151,7 +150,7 @@ public class Segment extends Polygon {
 
     public final void setSegmentLit(boolean value) {
         segmentLitProperty().setValue(value);
-        setOpacity(value ? 1.0d : Globals.unlitOpacity);
+        setOpacity(value ? 1.0d : Globals.instance().unlitOpacity);
     }
 
     public final boolean isSegmentLit() {
@@ -188,7 +187,7 @@ public class Segment extends Polygon {
     }
 
     public final double getUnlitOpacity() {
-        return unlitOpacity == null ? Globals.unlitOpacity :
+        return unlitOpacity == null ? Globals.instance().unlitOpacity :
                 (double)unlitOpacity.getValue();
     }
 

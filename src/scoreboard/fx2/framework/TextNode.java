@@ -38,10 +38,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.geometry.VPos;
-import static scoreboard.fx2.framework.FxConstants.
-        DEFAULT_BACKGROUND_COLOR;
-import static scoreboard.fx2.framework.FxConstants.
-        DEFAULT_TEXT_COLOR;
 
 /*
  * This component places Text inside a bounding Rectangle, making it
@@ -62,14 +58,15 @@ public class TextNode extends Displayable {
     private double fontSize = 30d;
     public double getFontSize() { return fontSize; }
 
-    private Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
+    private Color backgroundColor =
+            FxConstants.instance().DEFAULT_BACKGROUND_COLOR;
     public Color getBackgroundColor() { return backgroundColor; }
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
         boundingRect.setFill(backgroundColor);
     }
 
-    private Color textColor = DEFAULT_TEXT_COLOR;
+    private Color textColor = FxConstants.instance().DEFAULT_TEXT_COLOR;
     public Color getTextColor() { return textColor; }
     public void setTextColor(Color textColor) {
         this.textColor = textColor;
@@ -87,7 +84,8 @@ public class TextNode extends Displayable {
 
     public TextNode(String varName, String content, double fontSize) {
         this(varName, content, fontSize,
-                DEFAULT_BACKGROUND_COLOR, DEFAULT_TEXT_COLOR);
+                FxConstants.instance().DEFAULT_BACKGROUND_COLOR,
+                FxConstants.instance().DEFAULT_TEXT_COLOR);
     }
 
     public TextNode(String varName, String content, double fontSize,

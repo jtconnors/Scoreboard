@@ -37,25 +37,39 @@ import scoreboard.fx2.networking.FxSocketReader;
 
 /*
  * Global variables that are JavaFX 2.x specific
+ *
+ * This class follows the Singleton design pattern and takes advantage of the 
+ * properties of the Java Virtual Machine such that initialiazion of the
+ * class instance will be done in a thread safe manner.
  */
-public class FxGlobals {    
+public class FxGlobals {
+    private FxGlobals() {}
+    
+    private static class LazyHolder {
+        private static final FxGlobals INSTANCE = new FxGlobals();
+    }
+    
+    public static FxGlobals instance() {
+        return LazyHolder.INSTANCE;
+    }
+    
     /*
      * Multicast socket to send XML updates over
      */
-    public static FxMulticastWriter multicastWriter;
+    public FxMulticastWriter multicastWriter;
     
     /*
      * Multicast socket to receive XML updates over
      */
-    public static FxMulticastReader multicastReader;
+    public FxMulticastReader multicastReader;
     
     /*
      * IP socket to send XML updates over
      */
-    public static FxMultipleSocketWriter multipleSocketWriter;
+    public FxMultipleSocketWriter multipleSocketWriter;
     
     /*
      * IP socket to send XML updates over
      */
-    public static FxSocketReader socketReader;   
+    public FxSocketReader socketReader;   
 }

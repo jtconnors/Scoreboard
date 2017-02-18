@@ -36,20 +36,35 @@ import javafx.util.Duration;
 
 /*
  * This class contains constants that are particular to the JavaFX 2.0
- * platform
+ * platform.
+ *
+ * It follows the Singleton design pattern and takes advantage of the 
+ * properties of the Java Virtual Machine such that initialiazion of the
+ * class instance will be done in a thread safe manner.
  */
+
 public class FxConstants {
-    public static final Color DEFAULT_DIGIT_COLOR = Color.RED;
-    public static final Color DEFAULT_SECONDARY_COLOR = Color.GOLDENROD;
-    public static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
-    public static final Color DEFAULT_BACKGROUND_COLOR = Color.BLACK;
+    private FxConstants() {}
+    
+    private static class LazyHolder {
+        private static final FxConstants INSTANCE = new FxConstants();
+    }
+    
+    public static FxConstants instance() {
+        return LazyHolder.INSTANCE;
+    }
+    
+    public final Color DEFAULT_DIGIT_COLOR = Color.RED;
+    public final Color DEFAULT_SECONDARY_COLOR = Color.GOLDENROD;
+    public final Color DEFAULT_TEXT_COLOR = Color.WHITE;
+    public final Color DEFAULT_BACKGROUND_COLOR = Color.BLACK;
     /*
      * Timer constants
      */
-    public static final Duration ONE_TENTH_SECOND = Duration.millis(100);
-    public static final Duration ONE_SECOND = Duration.millis(1000);
+    public final Duration ONE_TENTH_SECOND = Duration.millis(100);
+    public final Duration ONE_SECOND = Duration.millis(1000);
     // 9 minutes 59 seconds in second increments
-    public final static int MAX_PENALTY_TIME = 599;
+    public final int MAX_PENALTY_TIME = 599;
     // 99 minutes, 59.9 seconds in tenth of second increments
-    public static final int MAX_CLOCK_TIME = 59999;
+    public final int MAX_CLOCK_TIME = 59999;
 }

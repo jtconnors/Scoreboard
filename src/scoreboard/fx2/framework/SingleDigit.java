@@ -34,10 +34,7 @@ package scoreboard.fx2.framework;
 import javafx.scene.input.KeyCode;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.MIN_DIGIT_VALUE;
-import static scoreboard.common.Constants.MAX_DIGIT_VALUE;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import scoreboard.common.Constants;
 
 /*
  * This abstract class defines the behavior of a Displayable object comprised
@@ -66,6 +63,7 @@ public abstract class SingleDigit extends DisplayableWithDigits {
  *  abstract methods declared in DisplayableWithDigits must be defined.     *
  ****************************************************************************/
 
+    @Override
     protected Group createKeyPads() {
         Group group = new Group();
         singleDigit.keyPad = new KeyPad(
@@ -74,6 +72,7 @@ public abstract class SingleDigit extends DisplayableWithDigits {
                 (DisplayableWithDigits)this);
         singleDigit.keyPad.setVisible(false);
         singleDigit.setAction(new FunctionPtr() {
+            @Override
             public void invoke() {
                 singleDigit.displayKeyPad();
             }
@@ -82,6 +81,7 @@ public abstract class SingleDigit extends DisplayableWithDigits {
         return group;
     }
 
+    @Override
     protected void positionDigits() {
         getChildren().clear();
         boundingRect.setWidth(singleDigit.getLayoutBounds().getWidth());
@@ -92,19 +92,23 @@ public abstract class SingleDigit extends DisplayableWithDigits {
         componentHeight = boundingRect.getHeight();
     }
 
+    @Override
     protected void refreshOnOverallValueChange(int overallValue) {
         singleDigit.setValue(overallValue % 10);
         sendMessageToSocket(varName, String.valueOf(overallValue));
     }
 
+    @Override
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
         return keyCode.ordinal() - KeyCode.DIGIT0.ordinal();
     }
 
+    @Override
     protected int calculateKeyUpValue(Digit focusedDigit) {
         return getOverallValue() + focusedDigit.getIncrementValue();
     }
 
+    @Override
     protected int calculateKeyDownValue(Digit focusedDigit) {
         return getOverallValue() - focusedDigit.getIncrementValue();
     }
@@ -117,22 +121,29 @@ public abstract class SingleDigit extends DisplayableWithDigits {
      * Constructors
      */
     public SingleDigit(String varName) {
-        this(varName, DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(varName, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public SingleDigit(String varName, Color color) {
-        this(varName, color, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(varName, color, Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public SingleDigit(String varName, double digitHeight) {
-        this(varName, DEFAULT_DIGIT_COLOR, digitHeight, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(varName, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                digitHeight, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public SingleDigit(String varName, Color color, double digitHeight) {
-        this(varName, color, digitHeight, 0, MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(varName, color, digitHeight, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public SingleDigit(String varName, Color color, double digitHeight,
@@ -142,12 +153,14 @@ public abstract class SingleDigit extends DisplayableWithDigits {
         colorProperty().setValue(color);
         digitHeightProperty().setValue(digitHeight);
         overallValueProperty().setValue(overallValue);
-        this.minOverallValue = (minOverallValue >= MIN_DIGIT_VALUE &&
+        this.minOverallValue = (
+                minOverallValue >= Constants.instance().MIN_DIGIT_VALUE &&
                 minOverallValue <= maxOverallValue)
-                ? minOverallValue : MIN_DIGIT_VALUE;
-        this.maxOverallValue = (maxOverallValue <= MAX_DIGIT_VALUE &&
+                ? minOverallValue : Constants.instance().MIN_DIGIT_VALUE;
+        this.maxOverallValue = (
+                maxOverallValue <= Constants.instance().MAX_DIGIT_VALUE &&
                 maxOverallValue >= minOverallValue)
-                ? maxOverallValue : MAX_DIGIT_VALUE;
+                ? maxOverallValue : Constants.instance().MAX_DIGIT_VALUE;
     }
 
     /*

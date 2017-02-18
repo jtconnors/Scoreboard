@@ -31,13 +31,18 @@
 
 package scoreboard.fx2.framework;
 
+import java.lang.invoke.MethodHandles;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import scoreboard.common.Constants;
 import scoreboard.common.Globals;
-import static scoreboard.common.Constants.DEFAULT_HORN_FILE;
+import scoreboard.common.Utils;
 
 /*
  * The Horn class represents a special case.  We want to utilize the XML update
@@ -47,7 +52,10 @@ import static scoreboard.common.Constants.DEFAULT_HORN_FILE;
  */
 public class Horn extends DisplayableWithDigits {
     
-    private MediaPlayer mediaPlayer;
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+    
+    private final MediaPlayer mediaPlayer;
     
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
@@ -61,24 +69,30 @@ public class Horn extends DisplayableWithDigits {
  *  following methods are for all intents and purposes, null.               *
  ****************************************************************************/
 
+    @Override
     protected Group createKeyPads() {
         return null;
     }
 
+    @Override
     protected void positionDigits() {
     }
 
+    @Override
     protected void refreshOnOverallValueChange(int overallValue) {
     }
 
+    @Override
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
         return 0;
     }
 
+    @Override
     protected int calculateKeyUpValue(Digit focusedDigit) {
         return 0;
     }
 
+    @Override
     protected int calculateKeyDownValue(Digit focusedDigit) {
         return 0;
     }
@@ -99,33 +113,35 @@ public class Horn extends DisplayableWithDigits {
          * If the url starts with '/', then treat this as
          * a file inside the Scoreboard.jar archive
          */
-        if (Globals.hornURL != null) {
-            System.out.println("Reading user-defined horn URL: "
-                    + Globals.hornURL);
+        if (Globals.instance().hornURL != null) {
+            LOGGER.log(Level.INFO, "Reading user-defined horn URL: {0}",
+                    Globals.instance().hornURL);
             /*
              * If the hornURL starts with '/', then treat this as
              * a file inside the Scoreboard.jar archive
              */
-            if (Globals.hornURL.charAt(0) == '/') {
+            if (Globals.instance().hornURL.charAt(0) == '/') {
                 try {
-                    resource = getClass().getResource(Globals.hornURL);
+                    resource = getClass().getResource(
+                            Globals.instance().hornURL);
                     hornURLFound = true;
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("Not found in jar, Falling back to: "
-                            + DEFAULT_HORN_FILE);
+                    LOGGER.info(Utils.ExceptionStackTraceAsString(e));
+                    LOGGER.log(Level.INFO, 
+                            "Not found in jar, Falling back to: {0}",
+                            Constants.instance().DEFAULT_HORN_FILE);
                 }
             /*
              * Otherwise treat this as a standard URL String
              */
             } else {
                 try {
-                    resource = new URL(Globals.hornURL);
+                    resource = new URL(Globals.instance().hornURL);
                     hornURLFound = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("Falling back to default: "
-                            + DEFAULT_HORN_FILE);
+                } catch (MalformedURLException e) {
+                    LOGGER.info(Utils.ExceptionStackTraceAsString(e));
+                    LOGGER.log(Level.INFO, "Falling back to default: {0}",
+                            Constants.instance().DEFAULT_HORN_FILE);
                 }
             }
         }
@@ -134,7 +150,8 @@ public class Horn extends DisplayableWithDigits {
          * be found, use the default config.xml file found in the jar file.
          */
         if (!hornURLFound) {
-            resource = getClass().getResource(DEFAULT_HORN_FILE);
+            resource = getClass().getResource(
+                    Constants.instance().DEFAULT_HORN_FILE);
         }
 
         final Media media = new Media(resource.toString());

@@ -34,15 +34,10 @@ package scoreboard.fx2.impl.led;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import scoreboard.common.Constants;
 import scoreboard.fx2.framework.Digit;
 import scoreboard.common.Globals;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.MIN_DIGIT_VALUE;
-import static scoreboard.common.Constants.MAX_DIGIT_VALUE;
-import static scoreboard.common.Constants.BLANK_DIGIT;
-import static scoreboard.common.Constants.SEGMENT_EDGE_TO_DIGIT_HEIGHT_RATIO;
-import static scoreboard.common.Constants.SEGMENT_LENGTH_TO_DIGIT_HEIGHT_RATIO;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
+import scoreboard.fx2.framework.FxConstants;
 
 public class LEDDigit extends Digit {
     
@@ -99,21 +94,24 @@ public class LEDDigit extends Digit {
     /*
      * Abstract methods from Digit that must be defined.
      */
+    @Override
     protected void refreshOnColorChange(Color color) {
         for (Segment segment:segments) {
            segment.setColor(color);
         }
     }
 
+    @Override
     protected void refreshOnDigitHeightChange(double digitHeight) {
         getChildren().clear();
         init();
     }
 
+    @Override
     protected void refreshOnValueChange(int value) {
         for (int i=0; i<segmentBit.length; i++) {
            segments[i].setSegmentLit(
-               (segmentBitMask[value] & segmentBit[i]) != 0 ? true : false);
+                   ((segmentBitMask[value] & segmentBit[i]) != 0));
         }
     }
 
@@ -124,12 +122,16 @@ public class LEDDigit extends Digit {
      * Constructors and helpers
      */
     public LEDDigit() {
-        this(DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public LEDDigit(Color digitColor, double digitHeight) {
-        this(digitColor, digitHeight, 0, MIN_DIGIT_VALUE, MAX_DIGIT_VALUE);
+        this(digitColor, digitHeight, 0,
+                Constants.instance().MIN_DIGIT_VALUE,
+                Constants.instance().MAX_DIGIT_VALUE);
     }
 
     public LEDDigit(Color digitColor, double digitHeight, int value,
@@ -140,8 +142,10 @@ public class LEDDigit extends Digit {
 
     private void init() {
         segmentLength =
-                (getDigitHeight() * SEGMENT_LENGTH_TO_DIGIT_HEIGHT_RATIO);
-        edgeSz = (getDigitHeight() * SEGMENT_EDGE_TO_DIGIT_HEIGHT_RATIO);
+                (getDigitHeight() * 
+                Constants.instance().SEGMENT_LENGTH_TO_DIGIT_HEIGHT_RATIO);
+        edgeSz = (getDigitHeight() * 
+                Constants.instance().SEGMENT_EDGE_TO_DIGIT_HEIGHT_RATIO);
         segments = new Segment[segmentBit.length];
         getChildren().add(createSegments());
         getChildren().add(createBoundingRectangle());
@@ -150,35 +154,35 @@ public class LEDDigit extends Digit {
     private Group createSegments() {
         int displayValue = getValue();
         if ((displayValue == 0) && (isBlankIfZero())) {
-            displayValue = BLANK_DIGIT;
+            displayValue = Constants.instance().BLANK_DIGIT;
         }
         
         segments[0] = new Segment(segmentLength, false, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[0].setLayoutX(edgeSz);
         segments[0].setLayoutY(0);
         segments[1] = new Segment(segmentLength, true, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[1].setLayoutX(0);
         segments[1].setLayoutY(edgeSz);
         segments[2] = new Segment(segmentLength, true, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[2].setLayoutX(segmentLength);
         segments[2].setLayoutY(edgeSz);
         segments[3] = new Segment(segmentLength, false, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[3].setLayoutX(edgeSz);
         segments[3].setLayoutY(segmentLength);
         segments[4] = new Segment(segmentLength, true, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[4].setLayoutX(0);
         segments[4].setLayoutY(segmentLength + edgeSz);
         segments[5] = new Segment(segmentLength, true, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[5].setLayoutX(segmentLength);
         segments[5].setLayoutY(segmentLength + edgeSz);
         segments[6] = new Segment(segmentLength, false, getColor(),
-                Globals.unlitOpacity);
+                Globals.instance().unlitOpacity);
         segments[6].setLayoutX(edgeSz);
         segments[6].setLayoutY((2*segmentLength));
         

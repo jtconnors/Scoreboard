@@ -31,121 +31,150 @@
 
 package scoreboard.common;
 
-import scoreboard.fx2.networking.FxSocketReader;
+import java.lang.invoke.MethodHandles;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import scoreboard.fx2.framework.FocusableParent;
 import scoreboard.fx2.framework.hockey.HockeyScoreboard;
-import static scoreboard.common.Constants.DEFAULT_SESSION_ADDR;
-import static scoreboard.common.Constants.DEFAULT_PORT;
-import static scoreboard.common.Constants.DEFAULT_HOST;
-import static scoreboard.common.Constants.DEFAULT_UNLIT_OPACITY;
-import static scoreboard.common.Constants.DEBUG_NONE;
-import scoreboard.fx2.networking.FxMulticastReader;
-import scoreboard.fx2.networking.FxMulticastWriter;
-import scoreboard.fx2.networking.FxMultipleSocketWriter;
 
+/*
+ * Global variables
+ *
+ * This class follows the Singleton design pattern and takes advantage of the 
+ * properties of the Java Virtual Machine such that initialiazion of the
+ * class instance will be done in a thread safe manner.
+ */
 public class Globals {
+    
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+    
+    private Globals() {}
+    
+    private static class LazyHolder {
+        private static final Globals INSTANCE = new Globals();
+    }
+    
+    public static Globals instance() {
+        return LazyHolder.INSTANCE;
+    }
     /*
      * Global debug flags.  Each debug flag is assigned a value that is a
      * power of two, for easy bitmask operations.
      */
-    public static int debugFlags = DEBUG_NONE;
+    public int debugFlags = 0;
     /*
      * URL resource (in XML) describing layout of remote (slave) display
      */
-    public static String configURL;
+    public String configURL;
     /*
      * URL resource pointing to horn sound
      */
-    public static String hornURL;
+    public String hornURL;
     /*
      * Reference to HockeyScoreboard instance
      */
-    public static HockeyScoreboard hockeyScoreboardRef;
+    public HockeyScoreboard hockeyScoreboardRef;
     /*
      * Kludge needed to prevent multiple nodes handling the same keyboard
      * input more than once.
      */
-    public static boolean keyEventAlreadyProcessed = false;
+    public boolean keyEventAlreadyProcessed = false;
 
     /*
      * With respect to keyboard focus, this points to the last focused
      * node.
      */
-    public static FocusableParent lastFocused = null;
+    public FocusableParent lastFocused = null;
     
     /*
      * Command-line switch determines whether to use Single IP Socket
      * to send XML updates over.
      */
-    public static boolean useIPSocket = true;
+    public boolean useIPSocket = true;
     
     /*
      * Closed staus flag for simpleIPSocket, updated as status changes
      */
-    public static boolean socketClosed = true;
+    public boolean socketClosed = true;
     
     /*
      * IP Address of simpleIPSocket
      */
-    public static String socketAddr;
+    public String socketAddr;
     
     /*
      * Configurable (via command-line) IP Address for multicast socket
      */
-    public static String sessionAddr = DEFAULT_SESSION_ADDR;
+    public String sessionAddr = 
+            com.jtconnors.socket.Constants.instance().DEFAULT_SESSION_ADDR;
     
     /*
      * Command-line flag used to dump the scoreboard configuration in XML
      */
-    public static boolean dumpConfig = false;
+    public boolean dumpConfig = false;
     
     /*
      * Command-line flag used to specify a port number.
      */
-    public static int port = DEFAULT_PORT;
+    public int port = 
+            com.jtconnors.socket.Constants.instance().DEFAULT_PORT;
     
     /*
      * Command-line flag used to determine whether or not to display
      * Socket IP:port on the UI.
      */
-    public static boolean displaySocket = false;
+    public boolean displaySocket = false;
     
     /*
      * Command-line flag used to specify a port number.
      */
-    public static String host = DEFAULT_HOST;
+    public String host = 
+            com.jtconnors.socket.Constants.instance().DEFAULT_HOST;
     
     /*
      * Flag used to specify whether the display will be master or slave
      */
-    public static boolean isSlave = false;
+    public boolean isSlave = false;
     
     /*
      * Flag used to specify whether the display will be a TV. TVs can exhibit
      * overscan, where anything close to the edges of the screen won't be
      * dislayed.  So compensate for it.
      */
-    public static boolean isTV = false;
+    public boolean isTV = false;
     
     /*
      * Determines the opacity of unlit scoreboard bulbs (range: 0-1).
      * Depending upon the display (e.g. TV) the DEFAULT_UNLIT_OPACITY value
      * may appear to be too bright, so it could be lessened.
      */
-    public static double unlitOpacity = DEFAULT_UNLIT_OPACITY;
+    public double unlitOpacity = Constants.instance().DEFAULT_UNLIT_OPACITY;
+    
+    /*
+     * Not all implementations of JavaFX will have full multimedia support.  In
+     * these cases, the horn may need to be disabled, otherwise this program
+     * will fail with an Exception similar to the following, thrown:
+     *    MediaException: UNKNOWN : com.sun.media.jfxmedia.MediaException:
+     *    Could not create player!
+     */
+//    public boolean useHorn = true;
+    public boolean useHorn = false;
     
     /*
      * Command-line arguments help message supplied if user specifies
      * either "-help" or "--help" on command-line"
      */
-    private static String[] helpMsg = {
+    private final String[] helpMsg = {
         "Command-line options:\n",
         "  -configURL:URL (default: /scoreboard/config/config.xml in Scoreboard.jar)",
         "\t\tURL pointing to XML file describing remote client configuration",
         "  -debug:value ",
         "\t\tset debug flags (for values see scoreboard.common.Constants.java)",
+        "  -DisableHorn:[true or false] (default false) ",
+        "\t\tDisable use of the horn",
         "  -DisplaySocket",
         "\t\tShow socket connection info at bottom of scoreboard display",
         "  -DumpConfig:[true or false] (default false)",
@@ -175,7 +204,7 @@ public class Globals {
         ""
     };
     
-    public static void printCmdLineHelpMsg() {
+    public void printCmdLineHelpMsg() {
         for (String str : helpMsg) {
             System.out.println(str);    
         }
@@ -185,13 +214,13 @@ public class Globals {
      * Parse command-line arguments in one central place, as there are many
      * main methods which could use these common flags.
      */
-    public static void parseArgs(String[] args) {
+    public void parseArgs(String[] args) {
 
         InetAddress localAddr = null;
         try {
             localAddr = InetAddress.getLocalHost(); 
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
         }
         
         // Corner case where VirtualBox (and maybe other virtualization
@@ -200,112 +229,132 @@ public class Globals {
 //        InetAddress localAddr = IPAddrKludge.getLocalAddress();
         
         for (String arg : args) {
-            if (arg.equals("-slave")) {
-                isSlave = true;    
-            } else if (arg.equals("-master")) {
-                isSlave = false;
-            } else if (arg.equals("-tv")) {
-                isTV = true;
-            } else if (arg.equals("-help") || arg.equals("--help")) {
-                printCmdLineHelpMsg() ;
-                System.exit(0);
+            switch (arg) {
+                case "-slave":
+                    isSlave = true;
+                    break;
+                case "-master":
+                    isSlave = false;
+                    break;
+                case "-tv":
+                    isTV = true;
+                    break;
+                case "-help":
+                case "--help":
+                    printCmdLineHelpMsg() ;
+                    System.exit(0);
+                default:
+                    break;
             }
             
             String[] subarg = arg.split(":");
-            if (subarg[0].equals("-MulticastAddr")) {
-                useIPSocket = false;
-                if (subarg.length > 1) {
-                    if (subarg[1].equals("BasedOnLastQuartet")) {
-                        byte[] lquartets = localAddr.getAddress();
-                        String[] squartets = sessionAddr.split("[^0-9]");
-                        StringBuilder sb = new StringBuilder();
-                        for (int i=0; i<=2; i++) {
-                            sb.append(squartets[i]);
-                            sb.append(".");
+            switch (subarg[0]) {
+                case "-MulticastAddr":
+                    useIPSocket = false;
+                    if (subarg.length > 1) {
+                        if (subarg[1].equals("BasedOnLastQuartet")) {
+                            byte[] lquartets = localAddr.getAddress();
+                            String[] squartets = sessionAddr.split("[^0-9]");
+                            StringBuilder sb = new StringBuilder();
+                            for (int i=0; i<=2; i++) {
+                                sb.append(squartets[i]);
+                                sb.append(".");
+                            }
+                            // convert byte value to unisgned int
+                            int lastQuartet = lquartets[3];
+                            if (lastQuartet < 0) {
+                                lastQuartet += 256;
+                            }
+                            sb.append(lastQuartet);
+                            sessionAddr = new String(sb);
+                        } else {
+                            try {
+                                InetAddress address =
+                                        InetAddress.getByName(subarg[1]);
+                                sessionAddr = subarg[1];
+                            } catch (UnknownHostException e) {
+                                System.out.println("Bad Multicast IP address: " +
+                                        subarg[1] + " supplied by command-line.");
+                            }
                         }
-                        // convert byte value to unisgned int
-                        int lastQuartet = lquartets[3];
-                        if (lastQuartet < 0) {
-                            lastQuartet += 256;
-                        }
-                        sb.append(lastQuartet);
-                        sessionAddr = new String(sb);
-                    } else {
+                    }   break;
+                case "-host":
+                    if (subarg.length > 1) {
                         try {
-                            InetAddress address =
-                                    InetAddress.getByName(subarg[1]);
-                            sessionAddr = subarg[1];
+                            InetAddress address = InetAddress.getByName(subarg[1]);
+                            host = subarg[1];
                         } catch (UnknownHostException e) {
-                            System.out.println("Bad Multicast IP address: " +
+                            System.out.println("Bad IP address: " +
                                     subarg[1] + " supplied by command-line.");
                         }
-                    }
-                }
-            } else if (subarg[0].equals("-host")) {
-                if (subarg.length > 1) {
-                    try {
-                        InetAddress address = InetAddress.getByName(subarg[1]);
-                        host = subarg[1];
-                    } catch (UnknownHostException e) {
-                        System.out.println("Bad IP address: " +
-                                subarg[1] + " supplied by command-line.");
-                    }
-                }
-            } else if (subarg[0].equals("-debug")) {
-                if (subarg.length > 1) {
-                    debugFlags = Integer.parseInt(subarg[1]);
-                }    
-            } else if (subarg[0].equals("-port")) {
-                if (subarg.length > 1) {
-                    port = Integer.parseInt(subarg[1]);
-                }   
-            } else if (subarg[0].equals("-DumpConfig")) {
-                if (subarg.length > 1) {
-                    if (subarg[1].equals("true")) {
-                        dumpConfig = true;    
-                    }
-                }   
-            } else if (subarg[0].equals("-DisplaySocket")) {
-                if (subarg.length > 1) {
-                    if (subarg[1].equals("true")) {
-                        displaySocket = true;    
-                    }
-                }   
-            } else if (subarg[0].equals("-UseIPSocket")) {               
-                useIPSocket = true;
-                socketAddr = localAddr.getHostAddress();
-            } else if (subarg[0].equals("-UseMulticastSocket")) {               
-                useIPSocket = false;
-            } else if (subarg[0].equals("-configURL")
-                    || (subarg[0].equals("-hornURL"))) {
-                /*
-                 * A little bit of kludgery here, the original separator chosen
-                 * for command-line arguments was ":", which happens to
-                 * conflict with URL syntax.  For historical reasons, don't
-                 * want to change.  Just append all the substrings together
-                 * and insert a ":" in between (except for the last)
-                 */
-                StringBuffer sb = new StringBuffer();
-                for (int i = 1; i < subarg.length; i++) {
-                    sb.append(subarg[i]);
-                    if (i < (subarg.length - 1)) {
-                        sb.append(":");
-                    }
-                    if (subarg[0].equals("-configURL")) {
-                        configURL = sb.toString();
-                    } else {
-                        hornURL = sb.toString();
-                    }
-                }
-            } else if (subarg[0].equals("-unlitOpacity")) {
-                if (subarg.length > 1) {
-                    int value = Integer.parseInt(subarg[1]);
-                    if (value >= 0 && value <= 100) {
-                        unlitOpacity = (double) value / 100.0d;
-                        System.out.println("unlitOpacity changed to " +
-                                unlitOpacity);
-                    }
-                }   
+                    }   break;
+                case "-debug":
+                    if (subarg.length > 1) {
+                        debugFlags = Integer.parseInt(subarg[1]);
+                    }   break;
+                case "-port":
+                    if (subarg.length > 1) {
+                        port = Integer.parseInt(subarg[1]);
+                    }   break;
+                case "-DumpConfig":
+                    if (subarg.length > 1) {
+                        if (subarg[1].equals("true")) {
+                            dumpConfig = true;
+                        }
+                    }   break;
+                case "-DisplaySocket":
+                    if (subarg.length > 1) {
+                        if (subarg[1].equals("true")) {
+                            displaySocket = true;
+                        }
+                    }   break;
+                case "-UseIPSocket":
+                    useIPSocket = true;
+                    socketAddr = localAddr.getHostAddress();
+                    break;
+                case "-UseMulticastSocket":
+                    useIPSocket = false;
+                    break;
+                case "-configURL":
+                case "-hornURL":
+                    /*
+                    * A little bit of kludgery here, the original separator chosen
+                    * for command-line arguments was ":", which happens to
+                    * conflict with URL syntax.  For historical reasons, don't
+                    * want to change.  Just append all the substrings together
+                    * and insert a ":" in between (except for the last)
+                    */
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 1; i < subarg.length; i++) {
+                        sb.append(subarg[i]);
+                        if (i < (subarg.length - 1)) {
+                            sb.append(":");
+                        }
+                        if (subarg[0].equals("-configURL")) {
+                            configURL = sb.toString();
+                        } else {
+                            hornURL = sb.toString();
+                        }
+                    }   break;
+                case "-unlitOpacity":
+                    if (subarg.length > 1) {
+                        int value = Integer.parseInt(subarg[1]);
+                        if (value >= 0 && value <= 100) {
+                            unlitOpacity = (double) value / 100.0d;
+                            System.out.println("unlitOpacity changed to " +
+                                    unlitOpacity);
+                        }
+                    }   break;
+                case "-DisableHorn":
+                    if (subarg.length > 1) {
+                        if (subarg[1].equals("true")) {
+                            useHorn = false;
+                        } else if (subarg[1].equals("false")) {
+                            useHorn = true;
+                        }
+                    }   break;
+                default:
+                    break;
             }
         }
         
@@ -320,9 +369,11 @@ public class Globals {
              * can confuse Java as to which is the proper network interface.
              */
             socketAddr = host;
-            System.out.println("Socket - " + socketAddr + ":" + port);
+            LOGGER.log(Level.INFO, "Socket - {0}:{1}", 
+                    new Object[]{socketAddr, port});
         } else {
-            System.out.println("IP Multicast - " + sessionAddr + ":" + port);
+            LOGGER.log(Level.INFO, "IP Multicast - {0}:{1}",
+                    new Object[]{sessionAddr, port});
         }
     }
 }

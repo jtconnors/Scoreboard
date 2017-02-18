@@ -34,12 +34,8 @@ package scoreboard.fx2.framework;
 import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import static scoreboard.common.Constants.DEFAULT_DIGIT_HEIGHT;
-import static scoreboard.common.Constants.MIN_TWO_DIGIT_VALUE;
-import static scoreboard.common.Constants.MAX_TWO_DIGIT_VALUE;
-import static scoreboard.common.Constants.INTER_DIGIT_GAP_FRACTION;
+import scoreboard.common.Constants;
 import scoreboard.common.DigitsDisplayStates;
-import static scoreboard.fx2.framework.FxConstants.DEFAULT_DIGIT_COLOR;
 
 /*
  * This abstract class defines the behavior of a Displayable object comprised
@@ -71,11 +67,12 @@ public abstract class TwoDigit extends DisplayableWithDigits {
  *  abstract methods declared in DisplayableWithDigits must be defined.     *
  ****************************************************************************/
 
+    @Override
     protected void positionDigits() {
         getChildren().clear();
         double digitWidth = tensDigit.getLayoutBounds().getWidth();
         onesDigit.setLayoutX(digitWidth +
-                (INTER_DIGIT_GAP_FRACTION * digitWidth));
+                (Constants.instance().INTER_DIGIT_GAP_FRACTION * digitWidth));
         getChildren().addAll(tensDigit, onesDigit);
         boundingRect.setWidth(getLayoutBounds().getWidth());
         boundingRect.setHeight(getLayoutBounds().getHeight());
@@ -87,6 +84,7 @@ public abstract class TwoDigit extends DisplayableWithDigits {
         componentHeight = boundingRect.getHeight();
     }
 
+    @Override
     protected Group createKeyPads() {
         Group group = new Group();
         tensDigit.keyPad = new KeyPad(tensDigit.getLayoutBounds().getWidth(),
@@ -96,6 +94,7 @@ public abstract class TwoDigit extends DisplayableWithDigits {
         for (final Digit d : digitArr) {
             d.keyPad.setVisible(false);
             d.setAction(new FunctionPtr() {
+                @Override
                 public void invoke() {
                     d.displayKeyPad();
                 }
@@ -105,6 +104,7 @@ public abstract class TwoDigit extends DisplayableWithDigits {
         return group;
     }
 
+    @Override
     protected void refreshOnOverallValueChange(int overallValue) {
         /*
          * Special case:  If the allowTrailingZeros property is set to true and
@@ -131,6 +131,7 @@ public abstract class TwoDigit extends DisplayableWithDigits {
         sendMessageToSocket(varName, String.valueOf(displayOverallValue));
     }
 
+    @Override
     protected int calculateKeyNumValue(Digit focusedDigit, KeyCode keyCode) {
         int key = keyCode.ordinal() - KeyCode.DIGIT0.ordinal();
         int updatedValue;
@@ -143,10 +144,12 @@ public abstract class TwoDigit extends DisplayableWithDigits {
         return updatedValue;
     }
 
+    @Override
     protected int calculateKeyUpValue(Digit focusedDigit) {
         return getOverallValue() + focusedDigit.getIncrementValue();
     }
 
+    @Override
     protected int calculateKeyDownValue(Digit focusedDigit) {
         return getOverallValue() - focusedDigit.getIncrementValue();
     }
@@ -230,23 +233,29 @@ public abstract class TwoDigit extends DisplayableWithDigits {
      * Constructors
      */
     public TwoDigit(String varName) {
-        this(varName, DEFAULT_DIGIT_COLOR, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_TWO_DIGIT_VALUE, MAX_TWO_DIGIT_VALUE);
+        this(varName, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_TWO_DIGIT_VALUE,
+                Constants.instance().MAX_TWO_DIGIT_VALUE);
     }
 
     public TwoDigit(String varName, Color color) {
-        this(varName, color, DEFAULT_DIGIT_HEIGHT, 0,
-                MIN_TWO_DIGIT_VALUE, MAX_TWO_DIGIT_VALUE);
+        this(varName, color, Constants.instance().DEFAULT_DIGIT_HEIGHT, 0,
+                Constants.instance().MIN_TWO_DIGIT_VALUE,
+                Constants.instance().MAX_TWO_DIGIT_VALUE);
     }
 
     public TwoDigit(String varName, double digitHeight) {
-        this(varName, DEFAULT_DIGIT_COLOR, digitHeight, 0,
-                MIN_TWO_DIGIT_VALUE, MAX_TWO_DIGIT_VALUE);
+        this(varName, FxConstants.instance().DEFAULT_DIGIT_COLOR,
+                digitHeight, 0,
+                Constants.instance().MIN_TWO_DIGIT_VALUE,
+                Constants.instance().MAX_TWO_DIGIT_VALUE);
     }
 
     public TwoDigit(String varName, Color color, double digitHeight) {
         this(varName, color, digitHeight, 0,
-                MIN_TWO_DIGIT_VALUE, MAX_TWO_DIGIT_VALUE);
+                Constants.instance().MIN_TWO_DIGIT_VALUE,
+                Constants.instance().MAX_TWO_DIGIT_VALUE);
     }
 
     public TwoDigit(String varName, Color color, double digitHeight,
@@ -256,12 +265,14 @@ public abstract class TwoDigit extends DisplayableWithDigits {
         colorProperty().setValue(color);
         digitHeightProperty().setValue(digitHeight);
         overallValueProperty().setValue(overallValue);
-        this.minOverallValue = (minOverallValue >= MIN_TWO_DIGIT_VALUE &&
+        this.minOverallValue = (
+                minOverallValue >= Constants.instance().MIN_TWO_DIGIT_VALUE &&
                 minOverallValue <= maxOverallValue)
-                ? minOverallValue : MIN_TWO_DIGIT_VALUE;
-        this.maxOverallValue = (maxOverallValue <= MAX_TWO_DIGIT_VALUE &&
+                ? minOverallValue : Constants.instance().MIN_TWO_DIGIT_VALUE;
+        this.maxOverallValue = (
+                maxOverallValue <= Constants.instance().MAX_TWO_DIGIT_VALUE &&
                 maxOverallValue >= minOverallValue)
-                ? maxOverallValue : MAX_TWO_DIGIT_VALUE;
+                ? maxOverallValue : Constants.instance().MAX_TWO_DIGIT_VALUE;
     }
 
     /*

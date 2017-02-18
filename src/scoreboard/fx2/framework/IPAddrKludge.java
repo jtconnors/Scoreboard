@@ -31,6 +31,7 @@
 
 package scoreboard.fx2.framework;
 
+import java.lang.invoke.MethodHandles;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -38,9 +39,15 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import scoreboard.common.Utils;
 
 
 public class IPAddrKludge {
+    
+    private final static Logger LOGGER =
+            Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
     
     static class InetAddrMacAddrMap {
         InetAddress inetAddr;
@@ -116,19 +123,18 @@ public class IPAddrKludge {
      * that doesn't match any of the known virtualization MAC address patterns.
      */
     public static InetAddress getLocalAddress() {
-        Enumeration<NetworkInterface> interfaces = null;
+        Enumeration<NetworkInterface> interfaces;
         try {
             interfaces = NetworkInterface.getNetworkInterfaces();
         } catch (SocketException e) {
-            e.printStackTrace();
+            LOGGER.info(Utils.ExceptionStackTraceAsString(e));
             return null;
         }
         /*
          * Loop through network interfaces, and get list of potential
          * candidates.
          */
-        ArrayList<InetAddrMacAddrMap> candidates =
-                new ArrayList<InetAddrMacAddrMap>();
+        ArrayList<InetAddrMacAddrMap> candidates = new ArrayList<>();
         InetAddress loopbackAddress = null;
         for (NetworkInterface nic : Collections.list(interfaces)) {
             Enumeration<InetAddress> addresses = nic.getInetAddresses();
@@ -139,9 +145,12 @@ public class IPAddrKludge {
                         byte[] macAddr = nic.getHardwareAddress();
                         candidates.add(new InetAddrMacAddrMap(
                                 address, macAddr));
-System.out.println("   candidate: " + address.toString() + " MAC: " + MacAddrToString(macAddr));
+                        LOGGER.log(Level.INFO,
+                                "   candidate: {0} MAC: {1}",
+                                new Object[]{address.toString(),
+                                    MacAddrToString(macAddr)});
                     } catch (SocketException e) {
-                        e.printStackTrace();
+                        LOGGER.info(Utils.ExceptionStackTraceAsString(e));
                     }
                 } else if (address instanceof Inet4Address) {
                     loopbackAddress = address;
