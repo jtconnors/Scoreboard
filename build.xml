@@ -136,5 +136,9 @@
             <arg value="${jlink.arg7}"/>
         </exec>
     </target>
+    
+    <target name="-post-clean">
+        <delete file="dist.zip"/>
+    </target>
 
 </project>
