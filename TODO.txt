@@ -33,3 +33,25 @@ Enhancements:
 [Done]  Global debugFlags variable with -debug:value command-line switch
 
 [Done]  Allow Penalty player numbers to have a zero prefix (i.e. "00", "06" ...) 
+
+Modifications for Maven build
+
+[Done]	Refactor source to com.jtconnors.scoreboard
+
+[Done]	Create src/main/resources to house resource files
+
+[Done]	Create profiles in pom.xml to run alternate Main classes
+
+[]	Refactor test packages
+
+[Done]	Refactor /scoreboard/config location
+
+[Done]	Refactor scoreboard image files
+
+[]	Get Debug in pom.xml to work
+
+[Done]	Debug Horn capability with JDK 11 and OpenJFX
+
+[]	README.md documentation
+
+	[]	How to run alternate main classes through maven
