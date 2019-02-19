@@ -9,7 +9,7 @@ implementation pertains to ice hockey.  With an understanding of the overall
 organization and structure of the code, it should be straightforward to extend
 scoreboard functionality to include other sports.
 
-At start up, the scoreboard executes in one of two modes: as a master
+At start up, the scoreboard executes in one of two modes: as a __master__
 (the default), or as a slave.  In master mode, the scoreboard user interface is
 active.  When a user moves his/her pointing device over an editable part of the
 scoreboard (a scoreboard digit), that component will, via JavaFX animation,
@@ -19,7 +19,7 @@ input, the user can change the value of the focused digit.  Each time a
 scoreboard digit is modified, an XML packet is created describing the
 modification, and sent out over an IP socket.
 
-In slave or remote scoreboard mode, the scoreboard UI is inactive.  That is
+In __slave__ or remote scoreboard mode, the scoreboard UI is inactive.  That is
 to say, it will not respond to any mouse or keyboard input.  Its display
 can only be updated by listening in on an agreed-upon IP socket
 (configurable by command-line switch) for XML scoreboard update packets.
