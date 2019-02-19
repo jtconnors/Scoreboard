@@ -29,7 +29,7 @@ scoreboard in slave mode, use the -slave command-line switch.
 It is possible (and desirable) to have multiple slave scoreboards
 simultaneously receiving updates from one master scoreboard.
 
-For more information about the Scoreboard project, consult the README.html file
+For more information about the Scoreboard project, consult the **README.html** file
 
 This latest version of the source code is tagged ```1.0-JDK11-maven```.  It is modularized and as its name suggests, works with JDK11
 and is built with the ```apache maven``` build lifecycle system.
