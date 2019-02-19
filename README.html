@@ -6,7 +6,7 @@
     <title>JavaFX Scoreboard v1.0 README</title>
   </head>
   <body>
-    <big style="font-weight: bold;"><big>JavaFX Scoreboard v1.1 README</big></big><br>
+    <big style="font-weight: bold;"><big>JavaFX Scoreboard README</big></big><br>
     <br>
     <a href="#overview">Overview</a><br>
     <a href="#howto_run">How to Run the Application</a><br>
@@ -55,10 +55,17 @@
 
 
 
+
+
+
+
+
+
+
         archive contains the source code required to build an electronic
         scoreboard.&nbsp; It is written in Java utilizing the <a
-          href="http://www.oracle.com/technetwork/java/javafx/overview/index.html">JavaFX</a>
-        2.x API, and is packaged as a <a href="http://netbeans.org">NetBeans</a>
+          href="https://openjfx.io/">JavaFX</a> 2.x API, and is packaged
+        as a <a href="https://maven.apache.org/">maven</a>
         project.&nbsp; The type of scoreboard chosen for this
         implementation pertains to ice hockey.&nbsp; With an
         understanding of the overall organization and structure of the
@@ -179,6 +186,13 @@
 
 
 
+
+
+
+
+
+
+
       Switches</span><br>
     By running any of the main classes found in the <tt>scoreboard.fx2</tt>
     package directory with the <tt>-help</tt> or <tt>--help</tt>
@@ -196,14 +210,9 @@
       <li><tt>scoreboard.common</tt> - Contains the constants,
         interfaces and enums that are used throughout the source code<br>
       </li>
-      <li><tt>scoreboard.config</tt> - Used to house sample XML
-        configuration files describing remote scoreboard layout and
-        configuration.&nbsp; There is no Java source in this directory,
-        only XML files.<br>
-      </li>
+      
       <li><tt>scoreboard.fx2</tt> - This is where the various main Java
-        class files are located as described in the <a
-          href="#howto_run">How to Run the Application</a> section of
+        class files are located as described in the <a href="#howto_run">How to Run the Application</a> section of
         this document.<br>
       </li>
       <li><tt>scoreboard.fx2.framework</tt> - The heart of the
@@ -244,11 +253,14 @@
       </li>
       <li><tt>scoreboard.fx2.util</tt> - Contains trivial utility class
         specific to JavaFX</li>
-      <li><tt>scoreboard.util.sounds</tt> - Sample mp3 files that could
-        be used to customize the scoreboard horn sound<br>
-      </li>
-    </ul>
-    <br>
+      </ul>Additional Resources under <tt>src/main/resources</tt><br><ul>
+    </ul><ul><li>
+    <tt>/scoreboard/config/</tt> - Used to house sample XML
+        configuration files describing remote scoreboard layout and
+        configuration. <br></li>
+<li><tt>/scoreboard/images/</tt> - Used to house images used by the scoreboard software<br></li>
+<li><tt>/scoreboard/util/sounds/</tt> - Sample mp3 files that could
+        be used to customize the scoreboard horn sound</li></ul>
     <a name="framework"><span style="font-weight: bold;">A Little More
         Detail On the <tt>scoreboard.fx2.framework</tt> Package</span><br>
       &nbsp; <br>
@@ -293,8 +305,7 @@
         look and feel.<br>
       </li>
     </ol>
-    <img style="width: 912px; height: 597px;" alt=""
-      src="ClassDiagram-v1.1.jpg"><br>
+    <img style="width: 912px; height: 597px;" alt="" src="ClassDiagram-v1.1.jpg"><br>
     <br>
     <br>
     <a name="notes"></a><span style="font-weight: bold;">Additional
@@ -325,7 +336,7 @@
         spec.&nbsp; The second set of XML attributes describe what a
         scoreboard update looks like.&nbsp; A sample of possible
         scoreboard update attributes can be found at <tt>scoreboard.config.UpdateXMLSpec.xml</tt>.</li>
-      <li>The <tt>scoreboard.images</tt> directory/package contains
+      <li>The <tt>/scoreboard/images/</tt> directory/package contains
         JPEG images of scoreboard digits.&nbsp; Not used for this
         version of the source,&nbsp; the images could be used to
         implement yet another version of the scoreboard that simply
@@ -335,8 +346,7 @@
         than the rendered bulb and LED components.&nbsp; With JavaFX
         2.x, performance is much improved and the need for image based
         displays was no longer needed.</li>
-      <li><br>
-      </li>
+      
     </ol>
     <br>
     <a name="whatsnew"></a><span style="font-weight: bold;">What's New</span><br>
@@ -376,10 +386,16 @@
       <li>Global debugFlags variable with -debug:value command-line
         switch</li>
       <li>Allow Penalty player numbers to have a zero prefix (i.e. "00",
-        "06" ...)<br>
-      </li>
+        "06" ...)</li></ul><i>Version 1.2<br></i><ul>
+<li>Converted to use Java modules</li>
+<li>Built for JDK 11</li>
+<li>Build using Apache maven, using corresponding <tt>pom.xml</tt> file.</li>
+<li>Use external <tt>com.jtconnors.socket</tt> module published in the maven repository<br></li>
+<li>Refactor source under <tt>com.jtconnors.scoreboard</tt></li>
+<li><tt>link.bat</tt> script to create a runtime Scoreboard image using <tt>jlink</tt> utility<br></li></ul><ul>
     </ul>
     <br>
     <br>
-  </body>
-</html>
+  
+
+</body></html>
