@@ -1,4 +1,4 @@
-# Scoreboard-v1.1
+# Scoreboard
 
 Overview
 
