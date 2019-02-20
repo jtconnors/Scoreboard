@@ -31,6 +31,9 @@ do
     MODPATH=${MODPATH}":""${MODULES[$i]}"
 done
 
+#
+# Have to manually specify main class via jar --update until
+# maven-jar-plugin 3.1.2+ is released
 echo
 echo "Did you run 'mvn jar:jar' first?"
 echo
