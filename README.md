@@ -31,7 +31,7 @@ simultaneously receiving updates from one master scoreboard.
 
 For more information about the Scoreboard project, consult the **README.html** file
 
-This latest version of the source code is tagged ```1.2-JDK11-maven```.  It is modularized and as its name suggests, works with JDK11
+This latest version of the source code is tagged ```v1.2-JDK11-maven```.  It is modularized and as its name suggests, works with JDK11
 and is built with the ```apache maven``` build lifecycle system.
 
 Of note, the following maven goals can be executed:
