@@ -1,15 +1,16 @@
 
 #
-# These variables must refer to the project name and the directory
-# in the filesystem where the project resides respectively
-#
-PROJECT=Scoreboard
-PROJECTDIR=~/NetBeansProjects/$PROJECT
-
-#
-# Location of JDK with jpackage utility
+# Location of JDK with jpackage utility.  We defult to the user's Download
+# directory.  If it's in a different place, this variable must be changed.
 #
 JPACKAGE_HOME=~/Downloads/jdk-13.jdk/Contents/Home
+
+#
+# Unless these script files have been deliberately moved, the parent
+# directory of the directory containining these script files houses
+# the maven project and source code.
+#
+PROJECTDIR=..
 
 #
 # native platform
@@ -20,6 +21,7 @@ INSTALLER_TYPE=dmg
 #
 # Application specific variables
 #
+PROJECT=Scoreboard
 MAINMODULE=scoreboard
 MAINCLASS=com.jtconnors.scoreboard.fx2.Main
 MAINJAR=Scoreboard-1.2.jar
