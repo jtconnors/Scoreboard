@@ -16,15 +16,16 @@ Set-Variable -Name PROJECTDIR -Value ".."
 # native platform
 #
 Set-Variable -Name PLATFORM -Value win
-Set-Variable -Name INSTALLER_TYPE -Value exe
 
 #
 # Application specific variables
 #
 Set-Variable -Name PROJECT -Value Scoreboard
+Set-Variable -Name VERSION -Value "1.2"
 Set-Variable -Name MAINMODULE -Value scoreboard
 Set-Variable -Name MAINCLASS -Value com.jtconnors.scoreboard.fx2.Main
-Set-Variable -Name MAINJAR -Value Scoreboard-1.2.jar
+Set-Variable -Name MAINJAR -Value $PROJECT-$VERSION.jar
+Set-Variable -Name INSTALLERNAME -Value $PROJECT-$VERSION
 Set-Variable -Name LAUNCHER -Value $PROJECT
 
 #

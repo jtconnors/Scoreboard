@@ -16,15 +16,16 @@ PROJECTDIR=..
 # native platform
 #
 PLATFORM=mac
-INSTALLER_TYPE=dmg
 
 #
 # Application specific variables
 #
 PROJECT=Scoreboard
+VERSION=1.2
 MAINMODULE=scoreboard
 MAINCLASS=com.jtconnors.scoreboard.fx2.Main
-MAINJAR=Scoreboard-1.2.jar
+MAINJAR=$PROJECT-$VERSION.jar
+INSTALLERNAME=$PROJECT-$VERSION
 LAUNCHER=$PROJECT
 
 #
