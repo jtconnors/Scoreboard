@@ -20,4 +20,8 @@ if [ ! -f $TARGET/$MAINJAR ] ; then
 fi
 exec_cmd "jar --main-class $MAINCLASS --update --file $TARGET/$MAINJAR"
 
-exec_cmd "$JPACKAGE_HOME/bin/jpackage create-image $VERBOSE_OPTION --runtime-image $IMAGE --input $TARGET --output $APPIMAGE --name $LAUNCHER --main-jar $MAINJAR"
+exec_cmd "$JPACKAGE_HOME/bin/jpackage create-image $VERBOSE_OPTION --runtime-image $IMAGE --input $TARGET --output $APPIMAGE --name $LAUNCHER --arguments "-DisableHorn:true" --main-jar $MAINJAR"
+
+echo
+echo "Due to bug JDK-8209180, the following option: \"-DisableHorn:true\" has been added to the command line of $PROJECT via jpackage's --arguments option"
+echo

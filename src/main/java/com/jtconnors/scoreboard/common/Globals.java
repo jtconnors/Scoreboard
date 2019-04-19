@@ -349,6 +349,7 @@ public class Globals {
                     if (subarg.length > 1) {
                         if (subarg[1].equals("true")) {
                             useHorn = false;
+                            LOGGER.log(Level.INFO, "Horn is disabled."); 
                         } else if (subarg[1].equals("false")) {
                             useHorn = true;
                         }

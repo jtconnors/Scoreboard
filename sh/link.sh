@@ -28,3 +28,11 @@ do
 done
 
 exec_cmd "jlink $VERBOSE_OPTION --module-path $MODPATH --add-modules $MAINMODULE --compress=2 --launcher $LAUNCHER=$MAINMODULE/$MAINCLASS --output $IMAGE"
+
+echo
+echo "Due to bug JDK-8209180, the following option \"-DisableHorn:true\" has been added to the command line of $IMAGE/bin/$PROJECT"
+echo
+
+TMPSUFFIX=.tmp
+sed -i $TMPSUFFIX 's/\$@/-DisableHorn:true $@/' $IMAGE/bin/$PROJECT
+\rm $IMAGE/bin/$PROJECT$TMPSUFFIX
