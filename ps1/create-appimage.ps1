@@ -26,7 +26,20 @@ if ($Global:JUST_EXIT -eq "true") {
 ####################
 
 #
-# Run the Java command
+# Have to manually specify main class via jar --update until
+# maven-jar-plugin 3.1.2+ is released
+#
+Set-Variable -Name JAR_ARGS -Value @(
+    '--main-class',
+    """$MAINCLASS""",
+    '--update',
+    '--file',
+    """$TARGET\$MAINJAR"""
+)
+Exec-Cmd("jar.exe", $JAR_ARGS)
+
+#
+# Run the jpackage command
 #
 Set-Variable -Name JPACKAGE_ARGS -Value @(
     '--type',
@@ -35,6 +48,8 @@ Set-Variable -Name JPACKAGE_ARGS -Value @(
     """$LAUNCHER""",
     '--module',
     """$MAINMODULE/$MAINCLASS""",
+    '--arguments',
+    '-DisableHorn:true',
     '--runtime-image',
     """$IMAGE"""
 )
@@ -42,6 +57,10 @@ if ($VERBOSE_OPTION -ne $null) {
    $JPACKAGE_ARGS += '--verbose'
 }
 Exec-Cmd("$JPACKAGE_HOME\bin\jpackage.exe", $JPACKAGE_ARGS)
+
+Write-Output ""
+Write-Output "Due to bug JDK-8209180, the following option: '-DisableHorn:true' has been added to the command line of $PROJECT via jpackage's --arguments option"
+Write-Output ""
 
 #
 # Return to the original directory
