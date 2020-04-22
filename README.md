@@ -1,3 +1,4 @@
+
 # Scoreboard
 
 Overview
@@ -10,7 +11,7 @@ organization and structure of the code, it should be straightforward to extend
 scoreboard functionality to include other sports.
 
 At start up, the scoreboard executes in one of two modes: as a __master__
-(the default), or as a slave.  In master mode, the scoreboard user interface is
+(the default), or as a __slave__.  In __master__ mode, the scoreboard user interface is
 active.  When a user moves his/her pointing device over an editable part of the
 scoreboard (a scoreboard digit), that component will, via JavaFX animation,
 increase in size.  This provides the user a visual cue about what component is
@@ -25,14 +26,18 @@ can only be updated by listening in on an agreed-upon IP socket
 (configurable by command-line switch) for XML scoreboard update packets.
 Upon receiving those packets, the remote scoreboard instance will parse the
 XML data and change the scoreboard display accordingly.  To start up a
-scoreboard in slave mode, use the -slave command-line switch.
+scoreboard in slave mode, use the ```-slave``` command-line switch.
 It is possible (and desirable) to have multiple slave scoreboards
 simultaneously receiving updates from one master scoreboard.
 
 For more information about the Scoreboard project, consult the **README.html** file
 
-This latest version of the source code is tagged ```v1.2-JDK11-maven```.  It is modularized and as its name suggests, works with JDK11
-and is built with the ```apache maven``` build lifecycle system.
+This latest version of the source code is tagged ```v1.2-JDK14-maven```.     As its name suggests, it is specific to JDK 14 and can be built with the ```apache maven``` build lifecycle system. It uses the ```jdk.incubator.jpackage``` module utilities whose API has not been finalized and is subject to change.  As such, the scripts contained in this project will insist that JDK 14 be used because subsequent ```jpackage``` releases may be incompatible.
+
+**Requirements:**
+1. Your default JDK should point to a valid JDK 14 runtime in your ```PATH```.
+2. Prior to running any of the scripts in this project, either the ```JAVA_HOME``` or ```$env:JAVA_HOME``` (depending upon the platform in question) environment variable must be set to a valid JDK 14 runtime.
+3.  In order to generate ```EXE``` or ```MSI``` installers for Windows using the scripts in this project, the WiX toolkit version 3.0 or greater must be installed and placed on the ```PATH```.
 
 Of note, the following maven goals can be executed:
 
@@ -67,8 +72,10 @@ Notes:
    - These scripts have a few available command-line options.  To print out
 the options, add ```-?``` or ```--help``` as an argument to any script.
    - These scripts share common properties that can be found in ```env.sh``` or ```env.ps1```.  These may need to be slightly modified to match  your specific configuration.
-   - In order to generate ```EXE``` or ```MSI``` installers for Windows, ISSC and/or WiX toolkits must be installed respectively and placed on the %PATH% variable.
+   - A sample ```Microsoft.PowerShell_profile.ps1``` file has been included to help configure a default Powershell execution environment.  A similar file can be generated specific to environments appropriate for running the ```bash(1)``` shell with a ```.bash_login``` or ```.bash_profile``` file.
    
 See also:
 
 - maven-com.jtconnors.socket: https://github.com/jtconnors/maven-com.jtconnors.socket
+
+

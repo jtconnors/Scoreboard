@@ -11,17 +11,4 @@ cd `dirname $0`
 #
 . env.sh
 
-#
-# Have to manually specify main class via jar --update until
-# maven-jar-plugin 3.1.2+ is released
-if [ ! -f $TARGET/$MAINJAR ] ; then
-	echo "Did you run 'mvn package' first?"
-	exit 1
-fi
-exec_cmd "jar --main-class $MAINCLASS --update --file $TARGET/$MAINJAR"
-
-exec_cmd "$JPACKAGE_HOME/bin/jpackage create-image $VERBOSE_OPTION --runtime-image $IMAGE --input $TARGET --output $APPIMAGE --name $LAUNCHER --arguments "-DisableHorn:true" --main-jar $MAINJAR"
-
-echo
-echo "Due to bug JDK-8209180, the following option: \"-DisableHorn:true\" has been added to the command line of $PROJECT via jpackage's --arguments option"
-echo
+exec_cmd "$JPACKAGE_HOME/bin/jpackage --type app-image $VERBOSE_OPTION --name $LAUNCHER --module $MAINMODULE/$MAINCLASS --runtime-image $IMAGE"
