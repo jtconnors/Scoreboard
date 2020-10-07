@@ -44,12 +44,12 @@ Exec-Cmd("jar.exe", $JAR_ARGS)
 Set-Variable -Name JPACKAGE_ARGS -Value @(
     '--type',
     'app-image',
+    '--vendor',
+    """$VENDOR_STRING""",
     '--name',
     """$LAUNCHER""",
     '--module',
     """$MAINMODULE/$MAINCLASS""",
-    '--arguments',
-    '-DisableHorn:true',
     '--runtime-image',
     """$IMAGE"""
 )
@@ -57,10 +57,6 @@ if ($VERBOSE_OPTION -ne $null) {
    $JPACKAGE_ARGS += '--verbose'
 }
 Exec-Cmd("$JPACKAGE_HOME\bin\jpackage.exe", $JPACKAGE_ARGS)
-
-Write-Output ""
-Write-Output "Due to bug JDK-8209180, the following option: '-DisableHorn:true' has been added to the command line of $PROJECT via jpackage's --arguments option"
-Write-Output ""
 
 #
 # Return to the original directory
