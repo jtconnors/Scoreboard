@@ -36,6 +36,8 @@ Set-Variable -Name JPACKAGE_ARGS -Value @(
     '--vendor',
     """$VENDOR_STRING""",
     '--win-shortcut',
+    '--icon',
+    'src/main/resources/scoreboard.ico',
     '--module-path',
     """$MODPATH""",
     '--module',
