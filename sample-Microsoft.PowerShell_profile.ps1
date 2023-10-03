@@ -7,6 +7,5 @@
 #   User's Documents\WindowsPowerShell directory
 # o edited to reflect your JDK environment
 #
-
-$env:PATH = 'd:\openjdk\jdk-17\bin;' + $env:PATH
-$env:JAVA_HOME = 'd:\openjdk\jdk-17'
+$env:JAVA_HOME = 'C:\devel\jdk\defaultjdk'
+$env:PATH = $env:JAVA_HOME + '\bin;' + $env:PATH
