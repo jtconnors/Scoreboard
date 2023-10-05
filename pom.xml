@@ -87,7 +87,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>${mainClass}</mainClass>
+                            <mainClass>com.jtconnors.scoreboard.fx2.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -112,7 +112,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>${mainClass}</mainClass>
+                    <mainClass>com.jtconnors.scoreboard.fx2.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
