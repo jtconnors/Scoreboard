@@ -32,7 +32,7 @@ simultaneously receiving updates from one master scoreboard.
 
 For more information about the Scoreboard project, consult the **README.html** file
 
-This latest version of the source code is tagged ```v1.2-JDK25-maven```.     As its name suggests, it is specific to JDK 25 and can be built with the ```apache maven``` build lifecycle system. Scripts contained in this project will insist that JDK 25 be used, the first LTS release that formally includes the ```jpackage``` utility. Subsequent JDK releases have not been tested with this version of the project.
+This latest version of the source code is tagged ```v1.2-JDK25-maven```.     As its name suggests, it is specific to JDK 25 and can be built with the ```apache maven``` build lifecycle system. Scripts contained in this project will insist that JDK 25 be used. Subsequent JDK releases have not been tested with this version of the project.
 
 This project works on Windows, MacOS or Linux.
 
