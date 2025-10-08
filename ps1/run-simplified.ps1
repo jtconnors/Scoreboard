@@ -29,6 +29,8 @@ if ($Global:JUST_EXIT -eq "true") {
 # Run the Java command
 #
 Set-Variable -Name JAVA_ARGS -Value @(
+    "--enable-native-access=javafx.graphics",
+    "--enable-native-access=javafx.media",
     "--module-path",
     """$MODPATH""",
     "-m",
