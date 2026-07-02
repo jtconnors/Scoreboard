@@ -99,7 +99,7 @@ INSTALLER=installer
 # For JDK 25 javafx modules, make sure to use version 25 or greater
 #
 EXTERNAL_MODULES=(
-    "$REPO/com/jtconnors/com.jtconnors.socket/11.0.3/com.jtconnors.socket-11.0.3.jar"
+    "$REPO/io/github/jtconnors/com.jtconnors.socket/21.0.0/com.jtconnors.socket-21.0.0.jar"
     "$REPO/org/openjfx/javafx-base/25/javafx-base-25.jar"
     "$REPO/org/openjfx/javafx-controls/25/javafx-controls-25.jar"
     "$REPO/org/openjfx/javafx-graphics/25/javafx-graphics-25.jar"

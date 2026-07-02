@@ -80,7 +80,7 @@ Set-Variable -Name INSTALLER -Value installer
 # For JDK 25 javafx modules, make sure to use version 25 or greater
 #
 Set-Variable -Name EXTERNAL_MODULES -Value @(
-    "$REPO\com\jtconnors\com.jtconnors.socket\11.0.3\com.jtconnors.socket-11.0.3.jar",
+    "$REPO\io\github\jtconnors\com.jtconnors.socket\21.0.0\com.jtconnors.socket-21.0.0.jar",
     "$REPO\org\openjfx\javafx-base\25\javafx-base-25.jar",
     "$REPO\org\openjfx\javafx-controls\25\javafx-controls-25.jar",
     "$REPO\org\openjfx\javafx-graphics\25\javafx-graphics-25.jar",
@@ -210,9 +210,9 @@ if (-not (Test-Path $PROJECTDIR)) {
 # Check if $env:JAVA_HOME is both set and assigned to a valid Path
 #
 if ($env:JAVA_HOME -eq $null) {
-    GoodBye "env:JAVA_HOME Environment Variable is not set. Set the env:JAVA_HOME variable to a vaild JDK runtime location in your Powershell environment or uncomment and edit the 'set-Variable' statement at the beginning of the ps1\env.ps1 file." $LASTEXITCODE 
+    GoodBye "`$env:JAVA_HOME Environment Variable is not set. Set the `$env:JAVA_HOME variable to a vaild JDK runtime location in your Powershell environment or uncomment and edit the 'set-Variable' statement at the beginning of the ps1\env.ps1 file." $LASTEXITCODE 
 } elseif (-not (Test-Path $env:JAVA_HOME)) {
-	GoodBye "Path for Java Home 'env:JAVA_HOME' does not exist. Set the env:JAVA_HOME variable to a vaild JDK runtime location in your Powershell environment or uncomment and edit the 'set-Variable' statement at the beginning of the ps1\env.ps1 file." $LASTEXITCODE 
+	GoodBye "Path for Java Home `$env:JAVA_HOME does not exist. Set the `$env:JAVA_HOME variable to a vaild JDK runtime location in your Powershell environment or uncomment and edit the 'set-Variable' statement at the beginning of the ps1\env.ps1 file." $LASTEXITCODE 
 }
 
 #
@@ -231,7 +231,7 @@ $jdk_version_unfiltered = $java_version_output.Split(" ")[2].split(".-")[0]
 # them for a proper comparison.
 $jdk_version = $jdk_version_unfiltered -replace '["]'
 if ($jdk_version -ne $EXPECTED_JDK_VERSION) {
-    GoodBye "JDK version '$jdk_version' does not match expected version: '$EXPECTED_JDK_VERSION'. JAVA_HOME should be set to a JDK $EXPECTED_JDK_VERSION implementation." $LASTEXITCODE
+    GoodBye "JDK version '$jdk_version' does not match expected version: '$EXPECTED_JDK_VERSION'. `$env:JAVA_HOME should be set to a JDK $EXPECTED_JDK_VERSION implementation." $LASTEXITCODE
 }
 
 cd $PROJECTDIR

@@ -1,7 +1,7 @@
 
 # Scoreboard
 
-Overview
+### Overview
 
 This archive contains the source code required to build an electronic 
 scoreboard.  It is written in Java utilizing the JavaFX 2.x API, and is
@@ -36,12 +36,13 @@ This latest version of the source code is tagged ```v1.2-JDK25-maven```.     As 
 
 This project works on Windows, MacOS or Linux.
 
-**Requirements:**
+### Requirements:
 1. Your default JDK should point to a valid JDK 25 runtime in your ```PATH```.
 2. Prior to running any of the scripts in this project, either the ```JAVA_HOME``` or ```$env:JAVA_HOME``` (depending upon the platform in question) environment variable must be set to a valid JDK 25 runtime.
 3. In order to generate ```EXE``` or ```MSI``` installers for Windows using the scripts in this project, the WiX toolkit version 3.0 or greater must be installed and placed on the ```PATH```.
 4. For certain Linux distributions (e.g. Oracle Linux ...) additional tooling, like for example ```rpmbuild```, may be required in order to fully utilize the ```jpackage``` utility.
 
+### Maven Information
 
 Of note, the following maven goals can be executed:
 
@@ -61,7 +62,35 @@ configurations, that can be run using the following maven commands:
    - ```mvn  test -PMainRemoteFullScreen``` - Full Screen remote instance of the Scoreboard
    - ```mvn  test -PMainRemoteFullScreenTV``` - Full Screen (minus TV overscan) remote instance of the Scoreboard
    - ```mvn  test -PMainRemoteLED``` - Alternate remote Scoreboard implementation using LED Segments
-    
+
+The Maven build also includes profiles for creating custom runtime images and native application packages directly from the Maven lifecycle.
+
+To create a trimmed runtime image with `jlink`, run:
+
+```sh
+mvn clean package -Pjlink
+```
+
+This builds the application module, copies the runtime dependencies into target/modules, and writes the generated runtime image to target/image.
+
+To create a native application image with `jpackage`, run:
+```
+mvn clean verify -Pjpackage
+```
+
+This first creates the jlink runtime image, then packages the application into ```target/jpackage```. By default, the jpackage profile creates an ```app-image```.
+
+Platform-specific installer profiles are also provided:
+```
+mvn clean verify -Pjpackage,jpackage-mac-dmg
+mvn clean verify -Pjpackage,jpackage-mac-pkg
+mvn clean verify -Pjpackage,jpackage-linux-deb
+mvn clean verify -Pjpackage,jpackage-linux-rpm
+mvn clean verify "-Pjpackage,jpackage-windows-exe"
+mvn clean verify "-Pjpackage,jpackage-windows-msi"
+```
+
+### Available Scripts for MacOS/Linux and Windows
 Furthermore, additional ```.sh``` and ```.ps1``` files are provided in the ```sh/``` and ```ps1\``` directories respectively:
    - ```sh/run.sh``` or ```ps1\run.ps1``` - script file to run the application from the module path
    - ```sh/run-simplified.sh``` or ```ps1\run-simplified.ps1``` - alternative script file to run the application, determines main class from ```SocketClientFX``` module
